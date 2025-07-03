@@ -13,10 +13,11 @@ return new class extends Migration {
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('product_id');
-            $table->string('size')->nullable();
+            $table->json('sizes')->nullable(); // Changed to support multiple sizes
             $table->string('color')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('sale_price', 10, 2)->nullable();
+            $table->timestamp('sale_start_at')->nullable(); // Added sale start field
             $table->timestamp('sale_end_at')->nullable();
             $table->integer('quantity')->default(0);
             $table->timestamps();

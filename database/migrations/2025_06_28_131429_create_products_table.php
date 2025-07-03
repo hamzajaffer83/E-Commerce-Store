@@ -16,6 +16,9 @@ return new class extends Migration {
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('cover_image')->nullable();
+            $table->enum('type', ['variable', 'simple'])->default('simple');
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('sub_category_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

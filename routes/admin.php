@@ -2,14 +2,14 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(function () {
     // Dasboard
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-    // Categorys
+    // Categories
     Route::prefix('/category')->group(function () {
 
         Route::get('/', [CategoryController::class, 'index'])->name("admin.category.index");
@@ -30,5 +30,16 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(functio
 
     });
 
+    // Products
+    Route::prefix('/product')->group(function () {
+
+        Route::get('/', [ProductController::class, 'index'])->name("admin.product.index");
+        Route::get('/create', [ProductController::class, 'create'])->name("admin.product.create");
+        Route::post('/store', [ProductController::class, 'store'])->name("admin.product.store");
+        Route::get('/edit/{productId}', [ProductController::class, 'edit'])->name("admin.product.edit");
+        Route::put('/update/{productId}', [ProductController::class, 'update'])->name("admin.product.update");
+        Route::delete('/delete/{productId}', [ProductController::class, 'destroy'])->name("admin.product.destroy");
+
+    });
 
 });
