@@ -45,6 +45,7 @@ export default function EditSubCategory({ parent_category, sub_category }: { par
                                     onChange={(e) => setData('name', e.target.value)}
                                     placeholder="Category name"
                                     required
+                                    autoFocus
                                 />
                                 <InputError message={errors.name} />
                             </div>

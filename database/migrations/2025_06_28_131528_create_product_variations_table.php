@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->timestamp('sale_start_at')->nullable(); // Added sale start field
             $table->timestamp('sale_end_at')->nullable();
             $table->integer('quantity')->default(0);
+            $table->string('sku')->nullable();
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');

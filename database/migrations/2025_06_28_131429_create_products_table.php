@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('cover_image')->nullable();
             $table->enum('type', ['variable', 'simple'])->default('simple');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('sub_category_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('sub_category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->timestamps();
         });
     }

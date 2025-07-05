@@ -23,7 +23,6 @@ export default function PricingWithSale({ data, setData, errors }: PricingWithSa
                             id="price"
                             type="number"
                             required
-                            autoFocus
                             value={data.price}
                             onChange={(e) => setData('price', e.target.value)}
                             placeholder="999"
@@ -37,15 +36,11 @@ export default function PricingWithSale({ data, setData, errors }: PricingWithSa
                                 id="sale_price"
                                 type="number"
                                 required
-                                autoFocus
                                 value={data.sale_price}
                                 onChange={(e) => setData('sale_price', e.target.value)}
                                 placeholder="899"
                             />
                             <InputError message={errors.sale_price} />
-                            {data.price <= data.sale_price  && (
-                                <InputError message="Sale price cannot be greater than or equal to the regular price." />
-                            )}
                         </div>
                     )}
                 </div>
@@ -74,7 +69,6 @@ export default function PricingWithSale({ data, setData, errors }: PricingWithSa
                         <Input
                             id="sale_start"
                             type="date"
-                            autoFocus
                             value={data.sale_start_at}
                             onChange={(e) => setData('sale_start_at', e.target.value)}
                         />
@@ -86,7 +80,6 @@ export default function PricingWithSale({ data, setData, errors }: PricingWithSa
                             id="sale_end"
                             type="date"
                             required
-                            autoFocus
                             value={data.sale_end_at}
                             onChange={(e) => setData('sale_end_at', e.target.value)}
                         />
@@ -95,7 +88,7 @@ export default function PricingWithSale({ data, setData, errors }: PricingWithSa
                         <InputError message="Sale end date must be after the sale start date." />
                     )}
                     </div>
-                    
+
                 </div>
             )}
             {data.sale_start_at && data.sale_end_at && (

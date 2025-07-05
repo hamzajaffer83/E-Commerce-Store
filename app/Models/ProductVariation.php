@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductVariation extends Model
 {
-    protected $fillable = ['product_id', 'size', 'color', 'price', 'sale_price', 'quantity'];
+    protected $fillable = ['product_id', 'sizes', 'color', 'price', 'sale_price', 'sale_start_at', 'sale_end_at' , 'quantity', 'sku'];
 
     protected $casts = [
-        'sale_end_at' => 'datetime',
+        'sizes' => 'array',
     ];
     public function product()
     {
@@ -19,12 +19,5 @@ class ProductVariation extends Model
     public function images()
     {
         return $this->hasMany(VariationImage::class);
-    }
-
-    public function isOnSale()
-    {
-        return $this->sale_price !== null &&
-            $this->sale_end_at !== null &&
-            now()->lessThan($this->sale_end_at);
     }
 }

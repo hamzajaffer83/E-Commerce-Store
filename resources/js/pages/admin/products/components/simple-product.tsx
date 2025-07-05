@@ -40,7 +40,6 @@ export default function SimpleProduct({ data, setData, errors }: Props) {
                 <Input
                     id="quantity"
                     type="number"
-                    autoFocus
                     value={data.quantity ?? ''}
                     onChange={(e) => setData('quantity', e.target.value)}
                     placeholder="100"

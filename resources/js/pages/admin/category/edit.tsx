@@ -41,6 +41,7 @@ export default function EditCategory({ category }: { category: Category }) {
                                 <Input
                                     id="name"
                                     name="name"
+                                    autoFocus
                                     value={data.name}
                                     onChange={(e) => setData('name', e.target.value)}
                                     placeholder="Category name"

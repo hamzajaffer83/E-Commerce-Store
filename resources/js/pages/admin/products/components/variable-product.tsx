@@ -141,7 +141,6 @@ export default function VariableProduct({ data, setData, errors }: Props) {
                         <Input
                             id="sale_start"
                             type="date"
-                            autoFocus
                             value={data.sale_start_at}
                             onChange={(e) => setData('sale_start_at', e.target.value)}
                         />
@@ -152,8 +151,6 @@ export default function VariableProduct({ data, setData, errors }: Props) {
                         <Input
                             id="sale_end"
                             type="date"
-                            required
-                            autoFocus
                             value={data.sale_end_at}
                             onChange={(e) => setData('sale_end_at', e.target.value)}
                         />
