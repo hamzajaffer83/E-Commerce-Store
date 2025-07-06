@@ -22,5 +22,7 @@ export type Product = {
     cover_image: File | null;
     category_id: number;
     sub_category_id?: number;
+    created_at: string;
+    updated_at: string;
     // Variants Type here
 }

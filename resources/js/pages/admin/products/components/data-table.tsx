@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Link } from '@inertiajs/react';
 import { Ellipsis } from 'lucide-react';
+import { truncateWords } from '@/lib/utils';
 
 const DataTable = ({ filterProducts, handleProductDelete }: { filterProducts: any[]; handleProductDelete: (id: number) => void }) => {
     return (
@@ -22,7 +22,8 @@ const DataTable = ({ filterProducts, handleProductDelete }: { filterProducts: an
                                 <img src={`/storage/${product.cover_image}`} alt={product.title} className="w-auto h-12" />
                             </td>
                             <td className="px-4 py-2">
-                                {product.title}
+                                {truncateWords(product.title, 10)}
+
                             </td>
                             <td className="px-4 py-2">
                                 <DropdownMenu>

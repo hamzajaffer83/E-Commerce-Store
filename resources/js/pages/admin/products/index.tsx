@@ -9,8 +9,13 @@ import { ProductPagination } from '@/types/paginations';
 import TableHeader from '@/components/custom/table-header';
 import PerPageDropdown from '@/components/custom/per-page-dropdown';
 import Pagination from '@/components/custom/pagination';
-import Table from '@/pages/admin/category/components/table';
 import DataTable from '@/pages/admin/products/components/data-table';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from "@/components/ui/card"
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'All Products', href: '/admin/product' }];
 
@@ -35,6 +40,8 @@ export default function ProductIndex({ products, per_page}: { products: ProductP
             onError: () => toast.error('Failed to delete product.'),
         });
     };
+
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="All Products" />
@@ -65,17 +72,56 @@ export default function ProductIndex({ products, per_page}: { products: ProductP
                     </DropdownMenu>
                 </div>
 
-                {/* Table */}
-                <DataTable filterProducts={filterProducts} handleProductDelete={handleProductDelete} />
+                {displayType === 'Table' ?
+                <>
+                    {/* Table */}
+                    <DataTable filterProducts={filterProducts} handleProductDelete={handleProductDelete} />
 
-                {/* Per Page & Pagination */}
-                <div className="mt-4 flex items-center justify-between">
-                    {/* Per Page Dropdown */}
-                    <PerPageDropdown per_page={per_page} route={route('admin.product.index')} />
+                    {/* Per Page & Pagination */}
+                    <div className="mt-4 flex items-center justify-between">
+                        {/* Per Page Dropdown */}
+                        <PerPageDropdown per_page={per_page} route={route('admin.product.index')} />
 
-                    {/* Pagination */}
-                    <Pagination pagination={products} />
-                </div>
+                        {/* Pagination */}
+                        <Pagination pagination={products} />
+                    </div>
+                </>
+                    :
+                    <>
+                        <div className="grid grid-cols-2  lg:grid-cols-3 xl:grid-cols-4 gap-2">
+                            {filterProducts.length > 0 ? (
+                                    filterProducts.map(( product) => (
+                                        <Card key={product.id} className="w-full pt-0 max-w-sm shadow-lg rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform">
+                                            <CardHeader className="p-0">
+                                                <img
+                                                    src={`/storage/${product.cover_image}`}
+                                                    alt={product.title}
+                                                    className="w-full h-48 object-cover"
+                                                />
+                                            </CardHeader>
+
+                                            <CardContent className="p-4">
+                                                <h3 className="text-lg font-semibold line-clamp-3">{product.title}</h3>
+                                            </CardContent>
+
+                                            <CardFooter className="px-4 pb-4 flex justify-between items-center text-sm text-gray-500">
+                                                <span>
+                                                  {new Date(product.created_at).toLocaleString()}
+                                                </span>
+                                                <button className="text-blue-600 hover:underline">View</button>
+                                            </CardFooter>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <p className="px-4 py-4 text-center text-gray-500">
+                                        No categories found.
+                                    </p>
+                            )}
+
+                        </div>
+                    </>
+                }
+
             </div>
         </AppLayout>
     );
