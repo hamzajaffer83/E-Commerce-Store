@@ -39,7 +39,7 @@ export default function CategoryIndex({ categories, per_page }: { categories: Ca
 
             <div className="m-5 rounded-md border p-4 shadow-sm">
                 {/* Search and Add Button */}
-                <TableHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} route={route('admin.category.create')} />
+                <TableHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} btnText="Add Category" route={route('admin.category.create')} />
 
                 {/* Table */}
                 <Table filteredCategories={filteredCategories} handleCategoryDelete={handleCategoryDelete} />

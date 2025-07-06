@@ -49,6 +49,7 @@ export default function CategoryIndex({ categories, per_page, parent_category }:
                 <TableHeader
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
+                    btnText="Add Sub Category"
                     route={route('admin.category.sub.create', { parent_id: parent_category.id })}
                 />
 

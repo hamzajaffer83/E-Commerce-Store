@@ -18,9 +18,18 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return Inertia::render('admin/products/index');
+        $perPage = $request->input('per_page', 10);
+
+        $query = Product::query();
+
+        $products = $query->orderBy('id', 'DESC')->paginate($perPage)->withQueryString();
+
+        return Inertia::render('admin/products/index', [
+            'products' => $products,
+            'per_page' => $perPage
+        ]);
     }
 
     /**
