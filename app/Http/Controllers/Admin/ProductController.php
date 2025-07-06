@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
-use App\Models\Category;
-use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 use App\Models\ProductVariation;
 use App\Models\VariationImage;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Support\Str;
+use App\Models\Category;
+use App\Models\Product;
 use Inertia\Response;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
@@ -159,6 +160,31 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Product::findOrFail($id);
+
+        // Loop through each variation
+        $productVariations = ProductVariation::where('product_id', $id)->get();
+
+        foreach ($productVariations as $productVariation) {
+            // Get the variation image (if it exists)
+            $variationImage = VariationImage::where('product_variation_id', $productVariation->id)->first();
+
+            if ($variationImage) {
+                // Delete image file from storage if exists
+                Storage::disk('public')->delete($variationImage->image_path);
+                $variationImage->delete();
+            }
+
+            $productVariation->delete();
+        }
+
+        // Delete cover image if it exists
+        if ($product->cover_image) {
+            Storage::disk('public')->delete($product->cover_image);
+        }
+
+        $product->delete();
+
+        return redirect()->route('admin.product.index');
     }
 }
