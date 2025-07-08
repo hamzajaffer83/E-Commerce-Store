@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CreateOrderRequest;
+use App\Mail\Admin\OrderMail;
+use App\Mail\OrderPlacedMail;
 use App\Models\CartItems;
 use App\Models\Order;
 use App\Models\OrderItems;
-use App\Models\Product;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ProductVariation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -40,16 +44,29 @@ class OrderController extends Controller
 
             foreach ($items as $item) {
                 $product = ProductVariation::find($item['product_variation_id']);
-                if (!$product)
+
+                if (!$product) {
                     continue;
+                }
+
+                $quantity = $item['quantity'];
+                $today = Carbon::today(); // Better than ->toDateString() for comparison
+
+                if ($product->sale_price && $product->sale_start_at && $product->sale_end_at) {
+                    if ($today->between($product->sale_start_at, $product->sale_end_at)) {
+                        $price += $product->sale_price * $quantity;
+                    } else {
+                        $price += $product->price * $quantity;
+                    }
+                } else {
+                    $price += $product->price * $quantity;
+                }
 
                 OrderItems::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_variation_id'],
                     'quantity' => $item['quantity'],
                 ]);
-
-                $price += $product->price * $item['quantity'];
 
                 if ($item instanceof CartItems) {
                     $item->delete();
@@ -59,6 +76,10 @@ class OrderController extends Controller
             $order->update(['price' => $price]);
 
             DB::commit();
+
+            Mail::to($user->email)->queue(new OrderPlacedMail($order));
+            $admin = User::where('type', 'admin')->first();
+            Mail::to($admin->email)->queue(new OrderMail($order));
             return response()->json([
                 'message' => 'Order Create Successfully',
                 'data' => $order->load('orderItems')
