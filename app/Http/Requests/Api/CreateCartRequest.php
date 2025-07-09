@@ -18,7 +18,7 @@ class CreateCartRequest extends FormRequest
             "user_id" => "nullable|exists:users,id",
 
             "cartItem" => "nullable|array",
-            "cartItem.*.product_id" => "required_with:cartItem|exists:products,id",
+            "cartItem.*.product_variation_id" => "required_with:cartItem|exists:product_variations,id",
             "cartItem.*.quantity" => "required_with:cartItem|integer|min:1",
         ];
         

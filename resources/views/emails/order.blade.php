@@ -78,7 +78,7 @@
                                 </tr>
                                 <tr>
                                     <td style="padding: 8px 0; font-weight: bold;">Total Amount:</td>
-                                    <td style="padding: 8px 0;">${{ number_format($order->price ?? 0, 2) }}</td>
+                                    <td style="padding: 8px 0;">PKR{{ number_format($order->price ?? 0, 2) }}</td>
                                 </tr>
                             </table>
 

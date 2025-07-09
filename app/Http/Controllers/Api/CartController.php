@@ -63,7 +63,7 @@ class CartController extends Controller
         // 4. Add or update cart items
         if ($request->has('cartItem') && is_array($request->cartItem)) {
             foreach ($request->cartItem as $item) {
-                if (!isset($item['product_id']) || !isset($item['quantity'])) {
+                if (!isset($item['product_variation_id']) || !isset($item['quantity'])) {
                     continue; // Skip invalid entries
                 }
 
@@ -71,7 +71,7 @@ class CartController extends Controller
                 CartItems::updateOrCreate(
                     [
                         'cart_id' => $cart->id,
-                        'product_id' => $item['product_id'],
+                        'product_variation_id' => $item['product_variation_id'],
                     ],
                     [
                         'quantity' => $item['quantity'],
