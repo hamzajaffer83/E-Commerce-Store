@@ -1,5 +1,3 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -10,12 +8,6 @@ import TableHeader from '@/components/custom/table-header';
 import PerPageDropdown from '@/components/custom/per-page-dropdown';
 import Pagination from '@/components/custom/pagination';
 import DataTable from '@/pages/admin/products/components/data-table';
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card"
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'All Products', href: '/admin/product' }];
 

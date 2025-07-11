@@ -99,20 +99,20 @@ class ProductController extends Controller
 
                 // Store Variant Data
                 $product_variation = ProductVariation::create([
-                    'product_id'      => $product->id,
-                    'image'           => $product_variant_image,
-                    'sizes'           => is_array($variant['size']) ? $variant['size'] : [$variant['size']],
-                    'color'           => $variant['color'],
-                    'price'           => $variant['price'] ?? $request->price ?? null,
-                    'sale_price'      => $variant['sale_price'] ?? $request->sale_price ?? null,
+                    'product_id' => $product->id,
+                    'image' => $product_variant_image,
+                    'sizes' => is_array($variant['size']) ? $variant['size'] : [$variant['size']],
+                    'color' => $variant['color'],
+                    'price' => $variant['price'] ?? $request->price ?? null,
+                    'sale_price' => $variant['sale_price'] ?? $request->sale_price ?? null,
                     'sale_start_at' => isset($variant['sale_price']) && $variant['sale_price'] !== null
                         ? ($variant['sale_start_at'] ?? $request->sale_start_at ?? null)
                         : null,
                     'sale_end_at' => isset($variant['sale_price']) && $variant['sale_price'] !== null
                         ? ($variant['sale_end_at'] ?? $request->sale_end_at ?? null)
                         : null,
-                    'quantity'        => $variant['quantity'],
-                    'sku'             => $variant['sku'],
+                    'quantity' => $variant['quantity'],
+                    'sku' => $variant['sku'],
                 ]);
 
                 // If image is uploaded for this variant then store in table
@@ -136,7 +136,10 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = ProductVariation::where('id', $id)->with('product', 'images')->first();
+        return Inertia::render('admin/products/product', [
+            'variant' => $product
+        ]);
     }
 
     /**
@@ -144,7 +147,14 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $parent_category = Category::where('parent_id', NULL)->get();
+        $sub_category = Category::where('parent_id', '!=', NULL)->get();
+        $product = Product::with('variations')->findOrFail($id);
+        return Inertia::render('admin/products/edit', [
+            'categories' => $parent_category,
+            'sub_categories' => $sub_category,
+            'product' => $product
+        ]);
     }
 
     /**
@@ -152,7 +162,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        dd($request->all());
     }
 
     /**

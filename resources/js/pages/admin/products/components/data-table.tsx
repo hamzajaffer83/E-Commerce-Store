@@ -1,6 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Ellipsis } from 'lucide-react';
 import { truncateWords } from '@/lib/utils';
+import { Link } from '@inertiajs/react';
 
 const DataTable = ({ filterProducts, handleProductDelete }: { filterProducts: any[]; handleProductDelete: (id: number) => void }) => {
     return (
@@ -22,8 +23,7 @@ const DataTable = ({ filterProducts, handleProductDelete }: { filterProducts: an
                                 <img src={`/storage/${product.cover_image}`} alt={product.title} className="w-auto h-12" />
                             </td>
                             <td className="px-4 py-2">
-                                {truncateWords(product.title, 10)}
-
+                                <Link href={route('admin.product.edit', product.id)} className='hover:underline' >{truncateWords(product.title, 10)}</Link>
                             </td>
                             <td className="px-4 py-2">
                                 <DropdownMenu>
@@ -33,9 +33,9 @@ const DataTable = ({ filterProducts, handleProductDelete }: { filterProducts: an
                                         </div>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                        {/*<DropdownMenuItem>*/}
-                                        {/*    <Link href={route('admin.product.edit', product.id)}>Edit</Link>*/}
-                                        {/*</DropdownMenuItem>*/}
+                                        <DropdownMenuItem>
+                                           <Link href={route('admin.product.edit', product.id)}>Edit</Link>
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             <button onClick={() => handleProductDelete(product.id)}>Delete</button>
                                         </DropdownMenuItem>

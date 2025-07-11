@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(function () {
     // Dasboard
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/all-orders', [AdminController::class, 'allOrder'])->name('all.orders');
+    Route::put('/update-order-status/{id}', [AdminController::class, 'updateOrderStatus'])->name('update.order.status');
+    Route::get('/single-order/{id}', [AdminController::class, 'singleOrder'])->name('single.order');
+    
 
     // Categories
     Route::prefix('/category')->group(function () {
@@ -32,8 +36,8 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(functio
 
     // Products
     Route::prefix('/product')->group(function () {
-
         Route::get('/', [ProductController::class, 'index'])->name("admin.product.index");
+        Route::get('/{id}', [ProductController::class, 'show'])->name('single.product');
         Route::get('/create', [ProductController::class, 'create'])->name("admin.product.create");
         Route::post('/store', [ProductController::class, 'store'])->name("admin.product.store");
         Route::get('/edit/{productId}', [ProductController::class, 'edit'])->name("admin.product.edit");

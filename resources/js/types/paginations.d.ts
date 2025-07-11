@@ -1,4 +1,4 @@
-import { Category, Product } from '@/types/data';
+import { Category, Order, Product } from '@/types/data';
 
 export interface PaginationLink {
     url: string | null;
@@ -25,6 +25,22 @@ export interface CategoryPagination {
 export interface ProductPagination {
     current_page: number;
     data: Product[];
+    first_page_url: string;
+    from: number | null;
+    links: PaginationLink[];
+    last_page: number;
+    last_page_url: string;
+    next_page_url?: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number | null;
+    total: number;
+}
+
+export interface OrderPagination {
+    current_page: number;
+    data: Order[];
     first_page_url: string;
     from: number | null;
     links: PaginationLink[];

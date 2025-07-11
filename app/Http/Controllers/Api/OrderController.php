@@ -50,7 +50,7 @@ class OrderController extends Controller
                 }
 
                 $quantity = $item['quantity'];
-                $today = Carbon::today(); // Better than ->toDateString() for comparison
+                $today = Carbon::today();
 
                 if ($product->sale_price && $product->sale_start_at && $product->sale_end_at) {
                     if ($today->between($product->sale_start_at, $product->sale_end_at)) {
@@ -64,7 +64,7 @@ class OrderController extends Controller
 
                 OrderItems::create([
                     'order_id' => $order->id,
-                    'product_id' => $item['product_variation_id'],
+                    'product_variation_id' => $item['product_variation_id'],
                     'quantity' => $item['quantity'],
                 ]);
 
