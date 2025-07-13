@@ -18,7 +18,7 @@ import VariableProduct from './components/variable-product';
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Create Product', href: '/admin/product/create' }];
 
 export default function ProductCreate({ categories, sub_categories }: { categories: Category[]; sub_categories: Category[] }) {
-    const [productType, setProductType] = useState<'simple' | 'variable'>('simple');
+    const [productType, setProductType] = useState<'simple' | 'variable'>('variable');
 
     const { data, setData, post, processing, errors } = useForm<Required<ProductForm>>({
         title: '',
@@ -26,7 +26,7 @@ export default function ProductCreate({ categories, sub_categories }: { categori
         description: '',
         category_id: null as number | null,
         sub_category_id: null as number | null,
-        type: 'simple',
+        type: 'variable',
 
         sizes: [] as string[],
         color: '',

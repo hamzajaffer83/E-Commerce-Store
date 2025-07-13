@@ -42,6 +42,7 @@ type Order = {
   price: string
   status: "paid" | "pending" | "shipped"
   created_at: string
+  updated_at: string
 }
 
 const productTypes = {
@@ -54,7 +55,7 @@ function groupOrdersByDate(orders: Order[]) {
   const grouped: Record<string, { date: string; paid?: number; shipped?: number; pending?: number }> = {}
 
   orders.forEach((order) => {
-    const dateKey = new Date(order.created_at).toISOString().slice(0, 10) // YYYY-MM-DD
+    const dateKey = new Date(order.updated_at).toISOString().slice(0, 10) // YYYY-MM-DD
 
     if (!grouped[dateKey]) {
       grouped[dateKey] = { date: dateKey, paid: 0, shipped: 0, pending: 0 }
@@ -73,7 +74,7 @@ function groupOrdersByDate(orders: Order[]) {
 export default function DashboardChart({ rawData }: { rawData: Order[] }) {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
-  const [productType, setProductType] = React.useState<"paid" | "shipped" | "pending">("paid")
+  const [productType, setProductType] = React.useState<"paid" | "shipped" | "pending">("shipped")
 
   React.useEffect(() => {
     if (isMobile) {
