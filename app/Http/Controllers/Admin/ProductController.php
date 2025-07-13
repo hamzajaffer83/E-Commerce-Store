@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\EditProductRequest;
 use App\Http\Requests\Product\StoreProductRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ProductVariation;
@@ -147,24 +148,174 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        $parent_category = Category::where('parent_id', NULL)->get();
-        $sub_category = Category::where('parent_id', '!=', NULL)->get();
+        $parentCategories = Category::whereNull('parent_id')->get();
+        $subCategories = Category::whereNotNull('parent_id')->get();
+
         $product = Product::with('variations')->findOrFail($id);
+
+        $productData = $product->toArray();
+
+        if ($product->type === 'variable') {
+            foreach ($product->variations as $index => $variation) {
+                $variationImage = VariationImage::where('product_variation_id', $variation->id)->first();
+                $productData['variations'][$index]['image_path'] = $variationImage?->image_path ?? null;
+            }
+        }
+
         return Inertia::render('admin/products/edit', [
-            'categories' => $parent_category,
-            'sub_categories' => $sub_category,
-            'product' => $product
+            'categories' => $parentCategories,
+            'sub_categories' => $subCategories,
+            'product' => $productData
         ]);
     }
-
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        dd($request->all());
+        $product = Product::findOrFail($id);
+        if ($product->type === 'simple') {
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'categoryId' => 'required|exists:categories,id',
+                'subCategoryId' => 'nullable|exists:categories,id',
+                'size' => 'required',
+                'color' => ['required', 'regex:/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+                'price' => 'required|numeric|min:0',
+                'salePrice' => 'nullable|numeric|min:0',
+                'quantity' => 'nullable|integer|min:0',
+                'saleStartAt' => 'nullable|date|after_or_equal:today',
+                'saleEndAt' => 'nullable|date|after:saleStartAt',
+            ]);
+        } elseif ($product->type === 'variable') {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'categoryId' => 'required|exists:categories,id',
+                'subCategoryId' => 'nullable|exists:categories,id',
+            ]);
+        }
+
+        $originalSlug = Str::slug($request->title);
+        $slug = $originalSlug;
+        $count = 1;
+
+        while (
+            Product::where('slug', $slug)
+                ->where('id', '!=', $product->id)
+                ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        // Update product
+        $product->fill([
+            'title' => $validated['title'],
+            'slug' => $slug,
+            'description' => $validated['description'],
+            'category_id' => $validated['categoryId'],
+            'sub_category_id' => $validated['subCategoryId'],
+        ])->save();
+
+        // Update or create product variation
+        $variation = ProductVariation::findOrFail(['product_id' => $product->id])->first();
+
+        if ($product->type === 'simple') {
+            $variation->fill([
+                'sizes' => $validated['size'],
+                'color' => $validated['color'],
+                'price' => $validated['price'],
+                'sale_price' => $validated['salePrice'],
+                'sale_start_at' => $validated['saleStartAt'],
+                'sale_end_at' => $validated['saleEndAt'],
+                'quantity' => $validated['quantity'],
+            ])->save();
+        }
+
+        return redirect()->back()->with('success', 'Product Updated successfully.');
     }
 
+    public function updateVariant(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'size' => 'required',
+            'color' => ['required', 'regex:/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'price' => 'required|numeric|min:0',
+            'salePrice' => 'nullable|numeric|min:0',
+            'quantity' => 'nullable|integer|min:0',
+            'saleStartAt' => 'nullable|date|after_or_equal:today',
+            'saleEndAt' => 'nullable|date|after:saleStartAt',
+        ]);
+
+        $variant = ProductVariation::findOrFail($id);
+
+        $variant->fill([
+            'sizes' => $validated['size'],
+            'color' => $validated['color'],
+            'price' => $validated['price'],
+            'sale_price' => $validated['salePrice'],
+            'sale_start_at' => $validated['saleStartAt'],
+            'sale_end_at' => $validated['saleEndAt'],
+            'quantity' => $validated['quantity'],
+        ])->save();
+
+        return redirect()->back()->with('success', 'Product Variant Updated successfully.');
+    }
+
+    public function updateImage(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'required',
+            'type' => 'required',
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+        // Create Name Of Image
+        $file = $request->file('file');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        // For Product Cover Image
+        if ($request->type == 'cover') {
+            // Store Image File
+            $image_name = $file->storeAs('products/cover_image', $filename, 'public');
+            $product = Product::findOrFail($request->id);
+
+            // Delete Previously Store Image File
+            if ($product->cover_image) {
+                Storage::disk('public')->delete($product->cover_image);
+                // Update Newly Store File Path
+                $product->update([
+                    'cover_image' => $image_name,
+                ]);
+            }
+        }
+
+        // For product Variant Image
+        if ($request->type == 'variant') {
+            // Store File Name
+            $image_name = $file->storeAs('products/variant_image', $filename, 'public');
+            $variantImage = VariationImage::where('product_variation_id', $request->id)->first();
+
+            // Delete Previously Store Image File
+            if ($variantImage) {
+                Storage::disk('public')->delete($variantImage->image_path);
+                // Update Newly Store File Path
+                $variantImage->update([
+                    'image_path' => $image_name,
+                ]);
+            } else {
+                VariationImage::create([
+                    'product_variation_id' => $request->id,
+                    'image_path' => $image_name,
+                ]);
+            }
+        }
+
+        // Redirect BacK
+        return redirect()->back()->with('success', 'Product Image Updated successfully.');
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -195,6 +346,24 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('admin.product.index');
+        return redirect()
+            ->route('admin.product.index');
+    }
+
+    public function destroyVariant(string $id)
+    {
+        $variant = ProductVariation::findOrFail($id);
+
+        $variationImage = VariationImage::where('product_variation_id', $variant->id)->first();
+
+        if ($variationImage) {
+            // Delete image file from storage if exists
+            Storage::disk('public')->delete($variationImage->image_path);
+            $variationImage->delete();
+        }
+
+        $variant->delete();
+
+        return redirect()->back();
     }
 }

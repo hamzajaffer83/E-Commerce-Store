@@ -18,6 +18,6 @@ class ProductVariation extends Model
 
     public function images()
     {
-        return $this->hasMany(VariationImage::class);
+        return $this->hasOne(VariationImage::class);
     }
 }

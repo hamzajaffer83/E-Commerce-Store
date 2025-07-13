@@ -18,6 +18,7 @@ export type Product = {
     id: number;
     title: string;
     description: string;
+    slug: string;
     type: 'simple' | 'variable';
     cover_image: File | null;
     category_id: number;

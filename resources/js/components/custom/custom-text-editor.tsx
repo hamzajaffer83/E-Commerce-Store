@@ -21,22 +21,20 @@ const toolbarButtons = [
 const CustomTextEditor: React.FC<Props> = ({ onChange, initialValue = '' }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [activeCommands, setActiveCommands] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (editorRef.current && initialValue) {
+    if (editorRef.current && initialValue && !isInitialized) {
       editorRef.current.innerHTML = initialValue;
+      placeCaretAtEnd(editorRef.current);
+      setIsInitialized(true);
     }
-  }, [initialValue]);
+  }, [initialValue, isInitialized]);
 
   useEffect(() => {
-    const handleSelectionChange = () => {
-      updateToolbarState();
-    };
-
+    const handleSelectionChange = () => updateToolbarState();
     document.addEventListener('selectionchange', handleSelectionChange);
-    return () => {
-      document.removeEventListener('selectionchange', handleSelectionChange);
-    };
+    return () => document.removeEventListener('selectionchange', handleSelectionChange);
   }, []);
 
   const updateContent = () => {
@@ -70,6 +68,16 @@ const CustomTextEditor: React.FC<Props> = ({ onChange, initialValue = '' }) => {
     updateContent();
   };
 
+  // Move caret to the end of contentEditable
+  const placeCaretAtEnd = (el: HTMLElement) => {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false); // Move to the end
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  };
+
   return (
     <div className="border p-2 rounded-md space-y-2">
       {/* Toolbar */}
@@ -80,7 +88,7 @@ const CustomTextEditor: React.FC<Props> = ({ onChange, initialValue = '' }) => {
             type="button"
             className={`px-2 py-1 border rounded text-xs cursor-pointer transition ${
               activeCommands.includes(cmd)
-                ? 'dark:bg-gray-700/30 dark:text-white bg-gray-200/80 border-gray-400 dark:border-gray-600  '
+                ? 'dark:bg-gray-700/30 dark:text-white bg-gray-200/80 border-gray-400 dark:border-gray-600'
                 : 'dark:hover:bg-gray-700/30 hover:bg-gray-200/80 hover:text-gray-900 dark:text-gray-300'
             }`}
             onClick={() => execCommand(cmd, arg, prompt)}
@@ -89,13 +97,13 @@ const CustomTextEditor: React.FC<Props> = ({ onChange, initialValue = '' }) => {
         ))}
       </div>
 
-      {/* Editable Content */}
+      {/* Editable Area */}
       <div
         ref={editorRef}
         contentEditable
         suppressContentEditableWarning
         onInput={updateContent}
-        className=" editor-content min-h-[200px] p-3 border rounded focus:outline-none space-y-2 text-left"
+        className="editor-content min-h-[200px] p-3 border rounded focus:outline-none space-y-2 text-left"
         style={{
           direction: 'ltr',
           whiteSpace: 'pre-wrap',
