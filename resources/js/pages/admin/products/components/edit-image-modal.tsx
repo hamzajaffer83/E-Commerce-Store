@@ -15,7 +15,7 @@ import { router } from "@inertiajs/react";
 
 interface Data {
     id: number | null;
-    type: 'cover' | 'variant';
+    type: 'cover' | 'variant' | 'image';
 }
 
 interface EditVariationModalProps {
@@ -32,6 +32,8 @@ export default function EditImageModal({
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<{ file?: string }>({});
+
+    console.log(data);
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();

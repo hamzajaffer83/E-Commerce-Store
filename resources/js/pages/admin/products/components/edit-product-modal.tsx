@@ -30,6 +30,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useForm } from "@inertiajs/react";
+import { socialMediaPlatforms } from "@/constant/social";
 
 interface EditProductModalProps {
     open: boolean;
@@ -46,6 +47,7 @@ export default function EditProductModal({
     sub_categories,
     data,
 }: EditProductModalProps) {
+    console.log(data);
     const { data: formData, setData, put, errors } = useForm({
         title: data.title,
         description: data.description,
@@ -58,6 +60,7 @@ export default function EditProductModal({
         size: data.variations[0].sizes,
         quantity: data.variations[0].quantity,
         color: data.variations[0].color,
+        social_link: data.social_links ?? [],
     });
 
     const [showColorPicker, setShowColorPicker] = useState(false);
@@ -231,20 +234,121 @@ export default function EditProductModal({
                         )}
                     </div>
 
+                    {/* Social Links */}
+                    <div className="grid gap-2">
+                        <Label>Social Links</Label>
+                        {formData.social_link.map((link, index) => (
+                            <div key={index} className="flex gap-2 items-start">
+                                <div className="w-1/2">
+                                    <Label htmlFor={`social_link[${index}].platform`}>Platform</Label>
+                                    <Popover >
+                                        <PopoverTrigger asChild>
+                                            <button
+                                                type="button"
+                                                className="w-full flex items-center justify-between rounded border px-3 py-2 text-sm"
+                                            >
+                                                {link.platform || 'Select Platform...'}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-full h-60 p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search..." />
+                                                <CommandEmpty>No platform found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {socialMediaPlatforms.map((social) => (
+                                                        <CommandItem
+                                                            key={social}
+                                                            value={social}
+                                                            onSelect={() => {
+                                                                const updatedLinks = formData.social_link.map((l, i) =>
+                                                                    i === index ? { ...l, platform: social } : l
+                                                                );
+                                                                setData('social_link', updatedLinks);
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    'mr-2 h-4 w-4',
+                                                                    link.platform === social ? 'opacity-100' : 'opacity-0'
+                                                                )}
+                                                            />
+                                                            {social}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                    <InputError message={errors[`social_link.${index}.platform`]} />
+                                </div>
+
+                                <div className="w-1/2">
+                                    <Label htmlFor={`social_link[${index}].url`}>URL</Label>
+                                    <Input
+                                        id={`social_link[${index}].url`}
+                                        type="url"
+                                        placeholder="https://..."
+                                        value={link.url}
+                                        onChange={(e) =>
+                                            setData(
+                                                'social_link',
+                                                formData.social_link.map((l, i) =>
+                                                    i === index ? { ...l, url: e.target.value } : l
+                                                )
+                                            )
+                                        }
+                                    />
+                                    <InputError message={errors[`social_link.${index}.url`]} />
+                                </div>
+
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    className="mt-6"
+                                    onClick={() =>
+                                        setData(
+                                            'social_link',
+                                            formData.social_link.filter((_, i) => i !== index)
+                                        )
+                                    }
+                                >
+                                    Remove
+                                </Button>
+                            </div>
+                        ))}
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                                setData('social_link', [
+                                    ...formData.social_link,
+                                    { platform: '', url: '' },
+                                ])
+                            }
+                        >
+                            Add Social Link
+                        </Button>
+                    </div>
+
                     {data.type === "simple" && (
                         <>
+
                             <div className="flex gap-2">
-                                <div className="grid gap-2 w-1/2">
-                                    <Label htmlFor="sizes">Product Size*</Label>
-                                    <Input
-                                        id="sizes"
-                                        type="text"
-                                        value={formData.size}
-                                        onChange={(e) => setData("size", e.target.value)}
-                                    />
-                                    <InputError message={errors.size} />
-                                </div>
-                                <div className="grid gap-2 w-1/2">
+                                {data.variations[0].sizes && (
+                                    <div className="grid gap-2 w-1/2">
+                                        <Label htmlFor="sizes">Product Size*</Label>
+                                        <Input
+                                            id="sizes"
+                                            type="text"
+                                            value={formData.size}
+                                            onChange={(e) => setData("size", e.target.value)}
+                                        />
+                                        <InputError message={errors.size} />
+                                    </div>
+                                )}
+                                <div className={`grid gap-2 ${data.variations[0].sizes ? 'w-1/2' : 'w-full'}`}>
                                     <Label htmlFor="quantity">Product Quantity*</Label>
                                     <Input
                                         id="quantity"
@@ -256,29 +360,34 @@ export default function EditProductModal({
                                 </div>
                             </div>
 
+
                             {/* Color Picker */}
-                            <div className="grid gap-2">
-                                <Label>Product Color*</Label>
-                                <div className="flex items-center gap-2">
-                                    <div className="relative" tabIndex={0} onBlur={handleColorPickerBlur}>
-                                        <div
-                                            className="h-10 w-10 rounded-md border cursor-pointer"
-                                            style={{ backgroundColor: formData.color }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setShowColorPicker(!showColorPicker);
-                                            }}
-                                        />
-                                        {showColorPicker && (
-                                            <div className="absolute -top-48 right-64 left-0 z-20 -translate-x-1/2 shadow-lg">
-                                                <HexColorPicker color={formData.color} onChange={(color) => setData("color", color)} />
-                                            </div>
-                                        )}
+                            {data.variations[0].color && (
+                                <div className="grid gap-2">
+                                    <Label>Product Color*</Label>
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative" tabIndex={0} onBlur={handleColorPickerBlur}>
+                                            <div
+                                                className="h-10 w-10 rounded-md border cursor-pointer"
+                                                style={{ backgroundColor: formData.color }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowColorPicker(!showColorPicker);
+                                                }}
+                                            />
+                                            {showColorPicker && (
+                                                <div className="absolute -top-48 right-64 left-0 z-20 -translate-x-1/2 shadow-lg">
+                                                    <HexColorPicker color={formData.color} onChange={(color) => setData("color", color)} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <Input value={formData.color} onChange={(e) => setData("color", e.target.value)} />
                                     </div>
-                                    <Input value={formData.color} onChange={(e) => setData("color", e.target.value)} />
+                                    <InputError message={errors.color} />
                                 </div>
-                                <InputError message={errors.color} />
-                            </div>
+                            )}
+
+
 
                             {/* Sale Toggle & Pricing */}
                             <div className="grid gap-2">

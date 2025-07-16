@@ -12,4 +12,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariation::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    public function socialLinks()
+    {
+        return $this->hasMany(ProductSocialLink::class);
+    }
 }

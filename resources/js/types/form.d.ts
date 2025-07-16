@@ -5,10 +5,12 @@ export interface CategoryForm {
 export interface ProductForm {
     title: string
     cover_image: File | null
+    images: File[] | null
     description: string
     category_id: number | null
     sub_category_id: number | null
     type: 'simple' | 'variable'
+    social_link: ProductSocialLink[]
 
     // For simple product
     sizes: string[]

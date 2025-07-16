@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\EditProductRequest;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Models\ProductImage;
+use App\Models\ProductSocialLink;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ProductVariation;
 use App\Models\VariationImage;
@@ -52,23 +54,23 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //Store Cover Image
+        // Store Cover Image
+        $product_cover_image = null;
         if ($request->hasFile('cover_image')) {
             $file = $request->file('cover_image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $product_cover_image = $file->storeAs('products/cover_image', $filename, 'public');
         }
 
-        //Create Unqiue Slug
+        // Create Unique Slug
         $originalSlug = Str::slug($request->title);
         $slug = $originalSlug;
         $count = 1;
         while (Product::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count;
-            $count++;
+            $slug = $originalSlug . '-' . $count++;
         }
 
-        //Store Product Basic Details
+        // Store Product Basic Details
         $product = Product::create([
             'title' => $request->title,
             'slug' => $slug,
@@ -79,7 +81,33 @@ class ProductController extends Controller
             'sub_category_id' => $request->sub_category_id,
         ]);
 
-        //Check Product Type and Store Data According to type
+        // ✅ Store Additional Product Images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $path = $image->storeAs('products/images', $filename, 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'path' => $path,
+                ]);
+            }
+        }
+
+        // ✅ Store Product Social Links
+        if (is_array($request->social_link)) {
+            foreach ($request->social_link as $link) {
+                if (!empty($link['platform']) && !empty($link['url'])) {
+                    ProductSocialLink::create([
+                        'product_id' => $product->id,
+                        'platform' => $link['platform'],
+                        'url' => $link['url'],
+                    ]);
+                }
+            }
+        }
+
+        // Store Variations
         if ($request->type === 'simple') {
             ProductVariation::create([
                 'product_id' => $product->id,
@@ -95,35 +123,29 @@ class ProductController extends Controller
 
         if ($request->type === 'variable' && is_array($request->variants)) {
             foreach ($request->variants as $variant) {
-                // Default to null in case there's no image
                 $product_variant_image = null;
 
-                // Store Variant Data
                 $product_variation = ProductVariation::create([
                     'product_id' => $product->id,
-                    'image' => $product_variant_image,
+                    'image' => null,
                     'sizes' => is_array($variant['size']) ? $variant['size'] : [$variant['size']],
                     'color' => $variant['color'],
-                    'price' => $variant['price'] ?? $request->price ?? null,
-                    'sale_price' => $variant['sale_price'] ?? $request->sale_price ?? null,
-                    'sale_start_at' => isset($variant['sale_price']) && $variant['sale_price'] !== null
-                        ? ($variant['sale_start_at'] ?? $request->sale_start_at ?? null)
-                        : null,
-                    'sale_end_at' => isset($variant['sale_price']) && $variant['sale_price'] !== null
-                        ? ($variant['sale_end_at'] ?? $request->sale_end_at ?? null)
-                        : null,
+                    'price' => $variant['price'] ?? $request->price,
+                    'sale_price' => $variant['sale_price'] ?? $request->sale_price,
+                    'sale_start_at' => $variant['sale_price'] ? ($variant['sale_start_at'] ?? $request->sale_start_at) : null,
+                    'sale_end_at' => $variant['sale_price'] ? ($variant['sale_end_at'] ?? $request->sale_end_at) : null,
                     'quantity' => $variant['quantity'],
                     'sku' => $variant['sku'],
                 ]);
 
-                // If image is uploaded for this variant then store in table
                 if (isset($variant['image']) && $variant['image'] instanceof \Illuminate\Http\UploadedFile) {
                     $file = $variant['image'];
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $product_variant_image = $file->storeAs('products/variant_image', $filename, 'public');
+
                     VariationImage::create([
                         'product_variation_id' => $product_variation->id,
-                        'image_path' => $product_variant_image ?? null,
+                        'image_path' => $product_variant_image,
                     ]);
                 }
             }
@@ -151,7 +173,7 @@ class ProductController extends Controller
         $parentCategories = Category::whereNull('parent_id')->get();
         $subCategories = Category::whereNotNull('parent_id')->get();
 
-        $product = Product::with('variations')->findOrFail($id);
+        $product = Product::with('variations', 'images', 'socialLinks')->findOrFail($id);
 
         $productData = $product->toArray();
 
@@ -168,37 +190,46 @@ class ProductController extends Controller
             'product' => $productData
         ]);
     }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
+        // dd($request);
+
         $product = Product::findOrFail($id);
-        if ($product->type === 'simple') {
 
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'categoryId' => 'required|exists:categories,id',
-                'subCategoryId' => 'nullable|exists:categories,id',
-                'size' => 'required',
-                'color' => ['required', 'regex:/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-                'price' => 'required|numeric|min:0',
-                'salePrice' => 'nullable|numeric|min:0',
-                'quantity' => 'nullable|integer|min:0',
-                'saleStartAt' => 'nullable|date|after_or_equal:today',
-                'saleEndAt' => 'nullable|date|after:saleStartAt',
-            ]);
-        } elseif ($product->type === 'variable') {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'categoryId' => 'required|exists:categories,id',
-                'subCategoryId' => 'nullable|exists:categories,id',
-            ]);
-        }
+        $baseRules = [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'categoryId' => 'required|exists:categories,id',
+            'subCategoryId' => 'nullable|exists:categories,id',
+            'social_link' => 'nullable|array',
+            'social_link.*.platform' => 'required_with:social_link|string|max:100',
+            'social_link.*.url' => 'required_with:social_link|url',
+        ];
 
-        $originalSlug = Str::slug($request->title);
+        $simpleRules = [
+            'size' => 'nullable',
+            'color' => ['nullable', 'regex:/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+            'price' => 'required|numeric|min:0',
+            'salePrice' => 'nullable|numeric|min:0',
+            'quantity' => 'nullable|integer|min:0',
+            'saleStartAt' => 'nullable|date|after_or_equal:today',
+            'saleEndAt' => 'nullable|date|after:saleStartAt',
+        ];
+
+        $rules = $product->type === 'simple'
+            ? array_merge($baseRules, $simpleRules)
+            : $baseRules;
+
+        $validated = $request->validate($rules);
+
+        // dd($validated);
+
+        // Slug handling
+        $originalSlug = Str::slug($validated['title']);
         $slug = $originalSlug;
         $count = 1;
 
@@ -207,37 +238,54 @@ class ProductController extends Controller
                 ->where('id', '!=', $product->id)
                 ->exists()
         ) {
-            $slug = $originalSlug . '-' . $count;
-            $count++;
+            $slug = $originalSlug . '-' . $count++;
         }
 
-        // Update product
-        $product->fill([
-            'title' => $validated['title'],
-            'slug' => $slug,
-            'description' => $validated['description'],
-            'category_id' => $validated['categoryId'],
-            'sub_category_id' => $validated['subCategoryId'],
-        ])->save();
+        DB::transaction(function () use ($product, $validated, $slug) {
+            // Update product
+            $product->update([
+                'title' => $validated['title'],
+                'slug' => $slug,
+                'description' => $validated['description'],
+                'category_id' => $validated['categoryId'],
+                'sub_category_id' => $validated['subCategoryId'],
+            ]);
 
-        // Update or create product variation
-        $variation = ProductVariation::findOrFail(['product_id' => $product->id])->first();
+            // Update variation (simple type)
+            if ($product->type === 'simple') {
+                $variation = ProductVariation::firstOrNew(['product_id' => $product->id]);
+                $variation->fill([
+                    'sizes' => $validated['size'],
+                    'color' => $validated['color'],
+                    'price' => $validated['price'],
+                    'sale_price' => $validated['salePrice'] ?? null,
+                    'sale_start_at' => $validated['saleStartAt'] ?? null,
+                    'sale_end_at' => $validated['saleEndAt'] ?? null,
+                    'quantity' => $validated['quantity'] ?? null,
+                ])->save();
+            }
 
-        if ($product->type === 'simple') {
-            $variation->fill([
-                'sizes' => $validated['size'],
-                'color' => $validated['color'],
-                'price' => $validated['price'],
-                'sale_price' => $validated['salePrice'],
-                'sale_start_at' => $validated['saleStartAt'],
-                'sale_end_at' => $validated['saleEndAt'],
-                'quantity' => $validated['quantity'],
-            ])->save();
-        }
+            // Handle social links
+            if (isset($validated['social_link'])) {
+                // Delete old ones
+                $product->socialLinks()->delete();
 
-        return redirect()->back()->with('success', 'Product Updated successfully.');
+                // Re-create new ones
+                foreach ($validated['social_link'] as $link) {
+                    $product->socialLinks()->create([
+                        'platform' => $link['platform'],
+                        'url' => $link['url'],
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->back()->with('success', 'Product updated successfully.');
     }
 
+    /**
+     * Update the specified variant in storage.
+     */
     public function updateVariant(Request $request, string $id)
     {
         $validated = $request->validate([
@@ -265,6 +313,9 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Product Variant Updated successfully.');
     }
 
+    /**
+     * Update the specified Image in storage.
+     */
     public function updateImage(Request $request)
     {
         $validated = $request->validate([
@@ -272,6 +323,7 @@ class ProductController extends Controller
             'type' => 'required',
             'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
         // Create Name Of Image
         $file = $request->file('file');
         $filename = time() . '_' . $file->getClientOriginalName();
@@ -313,6 +365,26 @@ class ProductController extends Controller
             }
         }
 
+        // For product Image
+        if ($request->type == 'image') {
+            $image_name = $file->storeAs('products/images', $filename, 'public');
+
+            $productImage = ProductImage::where('id', $request->id)->first();
+
+            // If image record exists
+            if ($productImage) {
+                // Delete previously stored file if it exists
+                if (!empty($productImage->path) && Storage::disk('public')->exists($productImage->path)) {
+                    Storage::disk('public')->delete($productImage->path);
+                }
+
+                // Update image path
+                $productImage->update([
+                    'path' => $image_name,
+                ]);
+            }
+        }
+
         // Redirect BacK
         return redirect()->back()->with('success', 'Product Image Updated successfully.');
     }
@@ -339,6 +411,19 @@ class ProductController extends Controller
             $productVariation->delete();
         }
 
+        // Loop through each variation
+        $productImages = ProductImage::where('product_id', $id)->get();
+
+        foreach ($productImages as $productImage) {
+            if ($productImage) {
+                // Delete image file from storage if exists
+                Storage::disk('public')->delete($productImage->path);
+                $productImage->delete();
+            }
+
+            $productImage->delete();
+        }
+
         // Delete cover image if it exists
         if ($product->cover_image) {
             Storage::disk('public')->delete($product->cover_image);
@@ -350,6 +435,9 @@ class ProductController extends Controller
             ->route('admin.product.index');
     }
 
+    /**
+     * Remove the specified variant from storage.
+     */
     public function destroyVariant(string $id)
     {
         $variant = ProductVariation::findOrFail($id);

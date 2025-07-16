@@ -27,7 +27,7 @@ export default function DashboardCard({
         <Card className="@container/card">
             <CardHeader>
                 <CardDescription>{heading}</CardDescription>
-                <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                <CardTitle className="text-xl font-semibold tabular-nums @[250px]/card:text-2xl">
                     {number}
                 </CardTitle>
                 {badge && (

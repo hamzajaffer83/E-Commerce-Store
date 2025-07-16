@@ -15,3 +15,20 @@ export type ProductVariationImage = {
     created_at: string;
     updated_at: string;
 }
+
+export type ProductSocialLink = {
+    id: number;
+    product_id: number;
+    platform: string;
+    url: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export type ProductImage = {
+    id: number;
+    product_id: number;
+    path: string;
+    created_at: string;
+    updated_at: string;
+}

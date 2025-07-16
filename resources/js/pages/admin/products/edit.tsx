@@ -10,6 +10,7 @@ import EditVariationModal from "./components/edit-variation-modal";
 import EditImageModal from "./components/edit-image-modal";
 import { toast } from "react-toastify";
 import ConfirmDialogBox from "./components/confirm-dialog-box";
+import { ProductImage, ProductSocialLink } from "@/types/helper";
 
 export type Variant = {
     id: number;
@@ -39,6 +40,8 @@ export type Product = {
     created_at: string;
     updated_at: string;
     variations: Variant[];
+    social_links: ProductSocialLink[];
+    images: ProductImage[];
 }
 
 type Props = {
@@ -68,7 +71,7 @@ export default function EditProduct({ categories, sub_categories, product }: Pro
     const [seletedVariantData, setSelectedVariantData] = useState<Variant>();
     const [modalImageData, setModalImageData] = useState<{
         id: number | null;
-        type: 'cover' | 'variant';
+        type: 'cover' | 'variant' | 'image';
     }>({
         id: null,
         type: 'cover',
@@ -94,84 +97,132 @@ export default function EditProduct({ categories, sub_categories, product }: Pro
                         <p className=""> <b>Slug</b> : {product.slug}</p>
                         <PenBox className="h-5 cursor-pointer" onClick={() => setShowProductModal(!showEditProductModal)} />
                     </div>
-                    <div className="lg:flex">
-                        <div className="relative flex w-full md:w-1/4 group">
-                            <img
-                                src={`/storage/${product.cover_image}`}
-                                alt={product.title}
-                                className="rounded-lg w-full"
-                            />
-                            <div
-                                className="absolute cursor-pointer top-2 right-2 z-20 p-1 bg-gray-900/15 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                            >
-                                <PenIcon onClick={() => {
-                                    setShowEditImageModal(!showEditImageModal)
-                                    setModalImageData({
-                                        id: product.id,
-                                        type: 'cover',
-                                    });
-                                }} />
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <h1 className="text-3xl font-bold">{product.title}</h1>
-                            <div dangerouslySetInnerHTML={{ __html: product.description }} />
-                            <div className="md:flex gap-2 mt-2">
-                                <p className="border px-4 py-1 w-fit mb-2 md:mb-0 rounded-full">
-                                    {product.category_id && (
-                                        'Category Name: ' + categories.find(cat => cat.id === product.category_id)?.name
-                                    )}
-                                </p>
-                                <p className="border px-4 py-1 w-fit rounded-full">
-                                    {product.sub_category_id && (
-                                        'Sub Category Name: ' + sub_categories.find(cat => cat.id === product.sub_category_id)?.name
-                                    )}
-                                </p>
-                            </div>
-                            <div className="md:flex gap-2 mt-2">
-                                <p className="border px-4 py-1 w-fit mb-2 md:mb-0 rounded-full">
-                                    <b>Created at: </b>{convertUtcToLocal(product.created_at)}
-                                </p>
-                                <p className="border px-4 py-1 w-fit rounded-full">
-                                    <b>Updated at: </b>{convertUtcToLocal(product.updated_at)}
-                                </p>
-                            </div>
-                            {product.type === 'simple' && product.variations.map((variation) => (
-                                <div key={variation.id} className="flex gap-2 mt-2 ">
-
-                                    <div className="flex flex-col gap-y-2">
-                                        <div className="flex gap-2">
-                                            <div className="px-4 py-1 w-fit rounded-full" style={{ backgroundColor: variation.color }}>{variation.color}</div>
-                                            <div className="px-4 py-1 w-fit border rounded-full">{variation.sizes}</div>
-                                        </div>
-                                        <p className="px-4 py-1 w-fit border rounded-full">
-                                            <b>Price: </b>
-                                            {variation.price}
-                                        </p>
-                                        {variation.sale_price && (
-                                            <div className="flex gap-2">
-                                                <p className="px-4 py-1 w-fit border rounded-full">
-                                                    <b>Sale Price: </b>
-                                                    {variation.sale_price}
-                                                </p>
-                                                <p className="px-4 py-1 w-fit border rounded-full">
-                                                    <b>Sale Start At: </b>
-                                                    {convertUtcToLocalDate(variation.sale_start_at)}
-                                                </p>
-                                                <p className="px-4 py-1 w-fit border rounded-full">
-                                                    <b>Sale End At: </b>
-                                                    {convertUtcToLocalDate(variation.sale_end_at)}
-                                                </p>
-                                            </div>
-                                        )}
-                                        <p className="px-4 py-1 w-fit border rounded-full">
-                                            <b>Quantity: </b>
-                                            {variation.quantity}
-                                        </p>
-                                    </div>
+                    <div className="p-3 space-y-2">
+                        <div className="lg:flex">
+                            <div className="relative flex w-full md:w-1/4 group">
+                                <img
+                                    src={`/storage/${product.cover_image}`}
+                                    alt={product.title}
+                                    className="rounded-lg w-full"
+                                />
+                                <div
+                                    className="absolute cursor-pointer top-2 right-2 z-20 p-1 bg-gray-900/15 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                >
+                                    <PenIcon onClick={() => {
+                                        setShowEditImageModal(!showEditImageModal)
+                                        setModalImageData({
+                                            id: product.id,
+                                            type: 'cover',
+                                        });
+                                    }} />
                                 </div>
-                            ))}
+                            </div>
+                            <div className="p-3">
+                                <h1 className="text-3xl font-bold">{product.title}</h1>
+                                <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                                <div className="md:flex gap-2 mt-2">
+                                    <p className="border px-4 py-1 w-fit mb-2 md:mb-0 rounded-full">
+                                        {product.category_id && (
+                                            'Category Name: ' + categories.find(cat => cat.id === product.category_id)?.name
+                                        )}
+                                    </p>
+                                    {product.sub_category_id && (
+                                        <p className="border px-4 py-1 w-fit rounded-full">
+                                            {product.sub_category_id && (
+                                                'Sub Category Name: ' + sub_categories.find(cat => cat.id === product.sub_category_id)?.name
+                                            )}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="md:flex gap-2 mt-2">
+                                    <p className="border px-4 py-1 w-fit mb-2 md:mb-0 rounded-full">
+                                        <b>Created at: </b>{convertUtcToLocal(product.created_at)}
+                                    </p>
+                                    <p className="border px-4 py-1 w-fit rounded-full">
+                                        <b>Updated at: </b>{convertUtcToLocal(product.updated_at)}
+                                    </p>
+                                </div>
+                                {product.type === 'simple' && product.variations.map((variation) => (
+                                    <div key={variation.id} className="flex gap-2 mt-2 ">
+
+                                        <div className="flex flex-col gap-y-2">
+                                            <div className="flex gap-2">
+                                                {variation.color && <div className="px-4 py-1 w-fit rounded-full" style={{ backgroundColor: variation.color }}>{variation.color}</div>}
+                                                {variation.sizes && <div className="px-4 py-1 w-fit border rounded-full">{variation.sizes}</div>}
+                                            </div>
+                                            <p className="px-4 py-1 w-fit border rounded-full">
+                                                <b>Price: </b>
+                                                {variation.price}
+                                            </p>
+                                            {variation.sale_price && (
+                                                <div className="flex gap-2">
+                                                    <p className="px-4 py-1 w-fit border rounded-full">
+                                                        <b>Sale Price: </b>
+                                                        {variation.sale_price}
+                                                    </p>
+                                                    {variation.sale_start_at && (
+                                                        <p className="px-4 py-1 w-fit border rounded-full">
+                                                            <b>Sale Start At: </b>
+                                                            {convertUtcToLocalDate(variation.sale_start_at)}
+                                                        </p>
+                                                    )}
+                                                    {variation.sale_end_at && (
+                                                        <p className="px-4 py-1 w-fit border rounded-full">
+                                                            <b>Sale End At: </b>
+                                                            {convertUtcToLocalDate(variation.sale_end_at)}
+                                                        </p>
+                                                    )}
+
+                                                </div>
+                                            )}
+                                            <p className="px-4 py-1 w-fit border rounded-full">
+                                                <b>Quantity: </b>
+                                                {variation.quantity}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+                        {product.social_links && (
+                            <div className="flex flex-wrap">
+                                {product.social_links.map((link) => (
+                                    <a
+                                        key={link.id}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href={link.url} 
+                                        className="py-2 px-4 rounded-full bg-black dark:bg-white text-gray-100 dark:text-gray-800 cursor-pointer hover:bg-gray-200/90"
+                                    >
+                                        {link.platform}
+                                    </a>
+                                ))}
+                            </div>
+                        )}
+                        {product.images && (
+                            <div className="flex gap-2">
+                                {product.images.map((image) => (
+                                    <div key={image.id} className="relative flex w-full md:w-1/6 group">
+                                        <img
+                                            src={`/storage/${image.path}`}
+                                            alt={image.path}
+                                            className="rounded-lg w-full"
+                                        />
+                                        <div
+                                            className="absolute cursor-pointer top-2 right-2 z-20 p-1 bg-gray-900/15 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                        >
+                                            <PenIcon onClick={() => {
+                                                setShowEditImageModal(!showEditImageModal)
+                                                setModalImageData({
+                                                    id: image.id,
+                                                    type: 'image',
+                                                });
+                                            }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <p>{product.type === 'variable' && 'Variation Details:'}</p>
@@ -248,7 +299,7 @@ export default function EditProduct({ categories, sub_categories, product }: Pro
                     data={product}
                 />
             }
-            {showEditVariationModal &&
+            {seletedVariantData && showEditVariationModal &&
                 <EditVariationModal
                     open={showEditVariationModal}
                     onOpenChange={setShowVariationModal}

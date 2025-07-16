@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('variations')->paginate(10);
+        $products = Product::with('variations', 'images', 'socialLinks')->paginate(10);
 
         if ($products->isNotEmpty()) {
             return response()->json([
@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $product = Product::where('slug', $slug)->with('variations')->first();
+        $product = Product::where('slug', $slug)->with('variations', 'images', 'socialLinks')->first();
 
         if ($product) {
             return response()->json([
@@ -50,7 +50,7 @@ class ProductController extends Controller
         if($fetchCategory) {
             $product = Product::where('category_id', $fetchCategory->id)
             ->orWhere('sub_category_id', $fetchCategory->id)
-            ->with('variations')
+            ->with('variations', 'images', 'socialLinks')
             ->get();
         } else {
             return response()->json([

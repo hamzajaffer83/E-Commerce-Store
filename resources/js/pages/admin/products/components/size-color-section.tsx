@@ -31,12 +31,10 @@ export default function SizeColorSection({ data, setData, errors }: SizeColorSec
             {/* Size Input */}
             <div className="sm:w-1/2">
                 <div className="grid gap-2">
-                    <Label>Size*</Label>
+                    <Label>Size</Label>
                     <Input
                         type="text"
-                        required
                         value={sizeInput}
-                        onChange={(e) => handleSizeChange(e.target.value)}
                         placeholder="Enter size (e.g. M, 42, etc.)"
                     />
                     <InputError message={errors.sizes} />
@@ -46,7 +44,7 @@ export default function SizeColorSection({ data, setData, errors }: SizeColorSec
             {/* Color Picker */}
             <div className="sm:w-1/2">
                 <div className="relative grid gap-2">
-                    <Label htmlFor="color">Color*</Label>
+                    <Label htmlFor="color">Color</Label>
                     <div className="flex items-center gap-2">
                         <div className="relative h-full" tabIndex={0} onBlur={handleColorPickerBlur}>
                             <div
