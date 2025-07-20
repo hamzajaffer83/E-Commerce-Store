@@ -185,13 +185,13 @@ export default function EditProduct({ categories, sub_categories, product }: Pro
                             </div>
                         </div>
                         {product.social_links && (
-                            <div className="flex flex-wrap">
+                            <div className="flex gap-2 flex-wrap">
                                 {product.social_links.map((link) => (
                                     <a
                                         key={link.id}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        href={link.url} 
+                                        href={link.url}
                                         className="py-2 px-4 rounded-full bg-black dark:bg-white text-gray-100 dark:text-gray-800 cursor-pointer hover:bg-gray-200/90"
                                     >
                                         {link.platform}

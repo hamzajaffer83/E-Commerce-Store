@@ -5,11 +5,10 @@ import ProductCard from '@/components/product-card'
 async function getProducts() {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const res = await fetch(`${appUrl}/api/products`, {
-        cache: 'no-store',
+        next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
-        console.error('Failed to fetch products:', await res.text());
         return [];
     }
 

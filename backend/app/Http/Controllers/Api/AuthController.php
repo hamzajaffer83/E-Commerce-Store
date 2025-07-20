@@ -42,7 +42,7 @@ class AuthController extends Controller
 
         Mail::to($user->email)->queue(new WelcomeUserMail($user));
 
-               
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

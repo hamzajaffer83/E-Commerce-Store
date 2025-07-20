@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $product = Product::where('slug', $slug)->with('variations', 'images', 'socialLinks')->first();
+        $product = Product::where('slug', $slug)->with('variations.images', 'images', 'socialLinks')->first();
 
         if ($product) {
             return response()->json([
@@ -46,7 +46,7 @@ class ProductController extends Controller
     public function category(string $category)
     {
         $fetchCategory = Category::where('name', $category)->first();
-        
+
         if($fetchCategory) {
             $product = Product::where('category_id', $fetchCategory->id)
             ->orWhere('sub_category_id', $fetchCategory->id)

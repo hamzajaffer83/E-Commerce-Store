@@ -14,14 +14,14 @@ class CreateCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "session_id" => "nullable|string",
-            "user_id" => "nullable|exists:users,id",
+            'user_id' => 'required_without:session_id|nullable|exists:users,id',
+            'session_id' => 'required_without:user_id|nullable|string',
 
             "cartItem" => "nullable|array",
             "cartItem.*.product_variation_id" => "required_with:cartItem|exists:product_variations,id",
             "cartItem.*.quantity" => "required_with:cartItem|integer|min:1",
         ];
-        
+
     }
 
 

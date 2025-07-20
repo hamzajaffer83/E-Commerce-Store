@@ -6,9 +6,9 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import { type Category } from "@/types/data"
-import Link from "next/link"
+} from "@/components/ui/navigation-menu";
+import { type Category } from "@/types/data";
+import Link from "next/link";
 import { useState } from "react";
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
@@ -25,7 +25,7 @@ export default function NavigationLinks({ data }: { data: Category[] }) {
               <div
                   className="relative group"
                   onMouseEnter={() => setDropdownOpen(true)}
-                  onMouseLeave={() => setTimeout(() => setDropdownOpen(false), 100) }
+                  onMouseLeave={() => setTimeout(() => setDropdownOpen(false), 300) }
                   onClick={() => setDropdownOpen(false) }
               >
                   {/* Top Nav Button */}
@@ -42,10 +42,10 @@ export default function NavigationLinks({ data }: { data: Category[] }) {
                   {dropdownOpen && (
                       <ul
                           onMouseEnter={() => setDropdownOpen(true)}
-                          onMouseLeave={() => setDropdownOpen(false)}
+                          onMouseLeave={() => setTimeout(() => setDropdownOpen(false), 300)}
                           className="absolute top-full left-0 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 min-w-[200px] p-2"
                       >
-                          {data.map((category) => (
+                          {data ? data.map((category) => (
                               <li
                                   key={category.id}
                                   className="relative group/category px-1 py-1"
@@ -74,7 +74,9 @@ export default function NavigationLinks({ data }: { data: Category[] }) {
                                       </ul>
                                   )}
                               </li>
-                          ))}
+                          )) :  (
+                              <>No Category Found</>
+                          )}
                       </ul>
                   )}
               </div>

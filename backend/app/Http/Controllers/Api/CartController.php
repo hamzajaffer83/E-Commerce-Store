@@ -13,7 +13,7 @@ class CartController extends Controller
     public function show(string $userIdOrSessionId)
     {
         // Find Cart by session_id or user_id
-        $cart = Cart::where('user_id', $userIdOrSessionId)->orWhere('session_id', $userIdOrSessionId)->first();
+        $cart = Cart::with('items.cart')->where('user_id', $userIdOrSessionId)->orWhere('session_id', $userIdOrSessionId)->first();
 
         if ($cart) {
             return response()->json([
@@ -67,16 +67,22 @@ class CartController extends Controller
                     continue; // Skip invalid entries
                 }
 
-                // Update if product already exists, otherwise create
-                CartItems::updateOrCreate(
-                    [
+                $existingItem = CartItems::where('cart_id', $cart->id)
+                    ->where('product_variation_id', $item['product_variation_id'])
+                    ->first();
+
+                if ($existingItem) {
+                    // ✅ If item exists, increase quantity
+                    $existingItem->quantity += $item['quantity'];
+                    $existingItem->save();
+                } else {
+                    // ✅ If item doesn't exist, create new
+                    CartItems::create([
                         'cart_id' => $cart->id,
                         'product_variation_id' => $item['product_variation_id'],
-                    ],
-                    [
                         'quantity' => $item['quantity'],
-                    ]
-                );
+                    ]);
+                }
             }
         }
 
@@ -130,11 +136,9 @@ class CartController extends Controller
     }
 
     // Clear Entire Cart Items
-    public function clear($userIdOrSessionId)
+    public function clear($id)
     {
-        $cart = Cart::where('user_id', $userIdOrSessionId)
-            ->orWhere('session_id', $userIdOrSessionId)
-            ->first();
+        $cart = Cart::where('id', $id)->first();
 
         if (!$cart) {
             return response()->json([

@@ -12,7 +12,7 @@ class Cart extends Model
         'status'
     ];
 
-
+    //One Cart has many cart items
     public function items(){
         return $this->hasMany(CartItems::class);
     }

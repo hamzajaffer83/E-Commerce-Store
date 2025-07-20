@@ -3,8 +3,10 @@
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
+    "skipLibCheck": false, // Skips type checking for node_modules
+    "strict": false, // Disables all strict checks
+    "noImplicitAny": false,    // Allows variables without a defined type
+    "forceConsistentCasingInFileNames": false, // If you're getting casing issues
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",

@@ -17,7 +17,7 @@ export type Variation = {
     sale_start_at: string;
     sale_end_at: string;
     sku: string;
-    images: VariationImage[];
+    images: VariationImage;
     created_at: string;
     updated_at: string;
 }
