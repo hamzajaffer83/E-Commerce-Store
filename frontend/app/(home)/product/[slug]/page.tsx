@@ -16,6 +16,9 @@ import {addToCart} from '@/redux/cartSlice';
 import {toast} from "react-toastify";
 import {getLocalStorageSessionId, getLocalStorageUser} from "@/lib/service";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+
 export default function SingleProduct() {
     const {slug} = useParams() as { slug: string };
     const [product, setProduct] = useState<Product | null>(null);
@@ -25,13 +28,14 @@ export default function SingleProduct() {
     const dispatch = useAppDispatch();
     const [quantity, setQuantity] = useState(1);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
     useEffect(() => {
         if (!slug) return;
 
-        fetch(`/api/products/${slug}`, {
+        fetch(`${apiUrl}/api/product/${slug}`, {
             next: {revalidate: 3600},
+            headers: {
+                'ApiSecretKey': apiSecretKey,
+            }
         })
             .then((res) => res.json())
             .then((res) => {
@@ -74,8 +78,6 @@ export default function SingleProduct() {
         )
     }
 
-    const currentPrice = selectedVariation?.sale_price || selectedVariation?.price || '';
-
     const allImages = [
         // {id: 'cover', path: product.cover_image},
         ...product.images.map((img) => ({id: img.id, path: img.path})),
@@ -116,9 +118,12 @@ export default function SingleProduct() {
         }
 
         try {
-            const res = await fetch('/api/cart/create-or-update', {
+            const res = await fetch(`${apiUrl}/api/cart`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ApiSecretKey': apiSecretKey,
+                },
                 body: JSON.stringify(payload),
             });
 

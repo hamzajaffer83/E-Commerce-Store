@@ -5,6 +5,9 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setUserSession, setCartFromServer } from '@/redux/cartSlice';
 import { getLocalStorageSessionId, getLocalStorageUser } from '@/lib/service';
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+
 export default function CartInitializer() {
     const dispatch = useAppDispatch();
     const [id, setId] = useState<string | number | null>(null);
@@ -33,10 +36,15 @@ export default function CartInitializer() {
 
         const fetchCart = async () => {
             try {
-                const res = await fetch(`/api/cart/${id}`, {
+                const res = await fetch(`${apiUrl}/api/cart/${id}`, {
                     next: { revalidate: 3600 },
+                    headers: {
+                        'ApiSecretKey': apiSecretKey,
+                    }
                 });
                 const data = await res.json();
+
+                console.log('Cart response:', data);
 
                 if (res.ok && data?.data) {
                     const Items = data.data.items;
@@ -58,7 +66,11 @@ export default function CartInitializer() {
 
         const fetchCart = async () => {
             try {
-                const res = await fetch(`/api/cart/${id}`);
+                const res = await fetch(`${apiUrl}/api/cart/${id}`, {
+                    headers: {
+                        'ApiSecretKey': apiSecretKey,
+                    }
+                });
                 const data = await res.json();
 
                 if (res.ok && data?.data) {

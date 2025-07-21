@@ -6,6 +6,9 @@ import { type Product } from '@/types/data';
 import HomeProductSectionSkeleton from "@/components/home-product-section-skeleton";
 import ProductCard from "@/components/product-card";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+
 export default function CategoryProduct() {
     const params = useParams();
     const name = params?.name as string;
@@ -16,8 +19,11 @@ export default function CategoryProduct() {
     useEffect(() => {
         if (!name) return;
 
-        fetch(`/api/category/${name}`, {
-            next: { revalidate: 3600 }
+        fetch(`${apiUrl}/api/category/${name}`, {
+            next: { revalidate: 3600 },
+            headers: {
+                'ApiSecretKey': apiSecretKey,
+            }
         })
             .then((res) => res.json())
             .then((data) => {

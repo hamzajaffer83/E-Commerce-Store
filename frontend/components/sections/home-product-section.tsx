@@ -2,10 +2,15 @@ import { type ProductPagination } from "@/types/pagination";
 import { type Product } from "@/types/data"
 import ProductCard from '@/components/product-card'
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+
 async function getProducts() {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const res = await fetch(`${appUrl}/api/products`, {
+    const res = await fetch(`${apiUrl}/api/products/all`, {
         next: { revalidate: 3600 },
+        headers: {
+            'ApiSecretKey': apiSecretKey,
+        }
     });
 
     if (!res.ok) {

@@ -11,6 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Trash2, XCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+
 export default function Cart() {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.cartItem);
@@ -25,9 +28,12 @@ export default function Cart() {
         // @ts-ignore
         dispatch(updateCartItem({ id, quantity }));
 
-        const res = await fetch(`/api/cart/item/${id}`, {
+        const res = await fetch(`${apiUrl}/api/cart/item/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'ApiSecretKey': apiSecretKey,
+            },
             body: JSON.stringify({ quantity }),
         });
     };
@@ -36,8 +42,11 @@ export default function Cart() {
     const handleRemove = async (id: number) => {
 
         dispatch(removeCartItem(id));
-        const res = await fetch(`/api/cart/item/${id}`, {
+        const res = await fetch(`${apiUrl}/api/cart/item/${id}`, {
             method: 'DELETE',
+            headers: {
+                'ApiSecretKey': apiSecretKey,
+            }
         });
         toast.success('Cart item removed successfully');
     };
@@ -46,8 +55,11 @@ export default function Cart() {
     const handleClearCart = async () => {
         if (!cartId) return;
 
-        const res = await fetch(`/api/cart/${cartId}`, {
+        const res = await fetch(`${apiUrl}/api/cart/${cartId}`, {
             method: 'DELETE',
+            headers: {
+                'ApiSecretKey': apiSecretKey,
+            }
         });
 
         const json = await res.json();

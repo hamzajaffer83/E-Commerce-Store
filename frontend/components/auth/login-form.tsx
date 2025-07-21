@@ -38,7 +38,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         setServerError(null)
 
         try {
-            // const appUrl = process.env.NEXT_PUBLIC_APP_URL;
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

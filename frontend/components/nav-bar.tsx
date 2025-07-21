@@ -7,18 +7,17 @@ import SidebarLink from "@/components/sidebar-link";
 import NavUser from "@/components/nav-user";
 import CartIcon from "@/components/cart-icon";
 
+const apiUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+
 async function getCategory() {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
-    if (!appUrl) {
-        console.error("Missing NEXT_PUBLIC_APP_URL environment variable");
-        return [];
-    }
-
     try {
-        const res = await fetch(`${appUrl}/api/category`, {
+        const res = await fetch(`${apiUrl}/api/category`, {
             cache: 'force-cache',
-            next: { revalidate: 3600 }, // Enables ISR: revalidates every 1 hour
+            next: { revalidate: 3600 },
+            headers: {
+                'ApiSecretKey': apiSecretKey,
+            }
         });
 
         if (!res.ok) {
