@@ -19,9 +19,9 @@ class CreateOrderRequest extends FormRequest
             "city" => "required|string|max:55",
             "cart_id" => "nullable|exists:carts,id",
 
-            "orderItems" => "nullable|array",
-            "orderItems.*.product_variation_id" => "required_with:orderItems|exists:product_variations,id",
-            "orderItems.*.quantity" => "required_with:orderItems|integer|min:1",
+            "orderItems" => "sometimes|required|array",
+            "orderItems.*.product_variation_id" => "required|exists:product_variations,id",
+            "orderItems.*.quantity" => "required|integer|min:1",
         ];
     }
 }

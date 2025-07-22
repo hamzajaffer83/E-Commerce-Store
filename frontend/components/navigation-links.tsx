@@ -82,12 +82,7 @@ export default function NavigationLinks({ data }: { data: Category[] }) {
               </div>
               <NavigationMenuItem>
                   <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                      <Link href="#">Track Order</Link>
-                  </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                      <Link href="#">Contact Us</Link>
+                      <Link href="/order/track">Track Order</Link>
                   </NavigationMenuLink>
               </NavigationMenuItem>
           </NavigationMenuList>

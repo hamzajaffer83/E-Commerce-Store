@@ -31,7 +31,7 @@ export default function NavUser() {
     };
 
     return (
-        <div className="p-3">
+        <div className="">
             {!user && (
                 <Link href="/login" className="">
                     <Button className="w-full sm:w-auto">Login</Button>

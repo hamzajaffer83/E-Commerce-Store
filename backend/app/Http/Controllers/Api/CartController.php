@@ -6,25 +6,37 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CreateCartRequest;
 use App\Models\Cart;
 use App\Models\CartItems;
+use App\Models\ProductVariation;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
     public function show(string $userIdOrSessionId)
     {
-        // Find Cart by session_id or user_id
-        $cart = Cart::with('items.cart')->where('user_id', $userIdOrSessionId)->orWhere('session_id', $userIdOrSessionId)->first();
+        // Find Cart by user_id or session_id
+        $cart = Cart::with('items')->where('user_id', $userIdOrSessionId)
+            ->orWhere('session_id', $userIdOrSessionId)
+            ->first();
 
-        if ($cart) {
-            return response()->json([
-                "message" => 'Cart Created Successfully',
-                "data" => $cart->load("items"),
-            ], 200);
-        } else {
+        if (!$cart) {
             return response()->json([
                 "error" => 'Cart not found',
             ], 404);
         }
+
+        // Eager-load product variation and its relations for each cart item
+        foreach ($cart->items as $item) {
+            $productVariation = ProductVariation::with('product', 'images')
+                ->find($item->product_variation_id);
+
+            // Optionally attach the product variation to the item
+            $item->product_variation = $productVariation;
+        }
+
+        return response()->json([
+            "message" => 'Cart found successfully',
+            "data" => $cart,
+        ], 200);
     }
 
     // Create or Update Cart

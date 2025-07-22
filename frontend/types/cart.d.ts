@@ -3,6 +3,7 @@ export interface CartItem {
     cart_id: number | null;
     product_variation_id: number;
     quantity: number;
+    product_variation?: any;
 }
 
 export interface CartState {

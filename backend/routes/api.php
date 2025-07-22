@@ -39,5 +39,7 @@ Route::middleware('checkApiSecretKey')->group(function () {
         Route::get('/order/{orderId}', [OrderController::class, 'show']);
         Route::put('/order/{orderId}/cancel', [OrderController::class, 'cancel']);
     });
+    Route::get('/track-order/{id}', [OrderController::class, 'track']);
+
 //
 });

@@ -52,20 +52,35 @@ class OrderController extends Controller
                 $quantity = $item['quantity'];
                 $today = Carbon::today();
 
-                if ($product->sale_price && $product->sale_start_at && $product->sale_end_at) {
-                    if ($today->between($product->sale_start_at, $product->sale_end_at)) {
-                        $price += $product->sale_price * $quantity;
-                    } else {
-                        $price += $product->price * $quantity;
+                $productPrice = $product->price;
+                $today = Carbon::today();
+
+                if ($product->sale_price) {
+                    $start = $product->sale_start_at ? Carbon::parse($product->sale_start_at) : null;
+                    $end = $product->sale_end_at ? Carbon::parse($product->sale_end_at) : null;
+
+                    if (
+                        (!$start && !$end) ||
+                        ($start && !$end && $today->greaterThanOrEqualTo($start)) ||
+                        (!$start && $end && $today->lessThanOrEqualTo($end)) ||
+                        ($start && $end && $today->between($start, $end))
+                    ) {
+                        $productPrice = $product->sale_price;
                     }
-                } else {
-                    $price += $product->price * $quantity;
                 }
 
+                $price += $productPrice * $quantity;
                 OrderItems::create([
                     'order_id' => $order->id,
                     'product_variation_id' => $item['product_variation_id'],
                     'quantity' => $item['quantity'],
+                ]);
+
+                $currentQuantity = $product->quantity;
+                $updatedQuantity = $currentQuantity - $quantity;
+
+                $product->update([
+                    'quantity' => $updatedQuantity
                 ]);
 
                 if ($item instanceof CartItems) {
@@ -128,5 +143,26 @@ class OrderController extends Controller
         } else {
             return response(['error' => 'No order found.'], 404);
         }
+    }
+
+    public function track(Request $request, $id)
+    {
+        // If you want tracking to be public, remove this check
+        // If you want it protected, enable the auth check
+        // $user = auth()->user();
+
+        $order = Order::where('id', $id)->first();
+
+        if (!$order) {
+            return response()->json([
+                'message' => 'Order not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'order_id'     => $order->id,
+            'status'       => $order->status,
+            'last_updated' => $order->updated_at->toDateTimeString(),
+        ]);
     }
 }

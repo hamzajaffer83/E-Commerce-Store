@@ -1,18 +1,18 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Search, ShoppingBasketIcon, User, Menu } from "lucide-react"
+import { Search } from "lucide-react"
 import { type Category } from "@/types/data"
 import NavigationLinks from "@/components/navigation-links"
 import SidebarLink from "@/components/sidebar-link";
 import NavUser from "@/components/nav-user";
 import CartIcon from "@/components/cart-icon";
 
-const apiUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
 
 async function getCategory() {
     try {
-        const res = await fetch(`${apiUrl}/api/category`, {
+        const res = await fetch(`${apiUrl}/api/categories/all`, {
             cache: 'force-cache',
             next: { revalidate: 3600 },
             headers: {
@@ -21,11 +21,8 @@ async function getCategory() {
         });
 
         if (!res.ok) {
-            // console.error('Failed to LARAVEL:', await res.text());
-
             return [];
         }
-
         const json = await res.json();
         return json;
     } catch (error) {

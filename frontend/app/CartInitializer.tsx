@@ -30,7 +30,7 @@ export default function CartInitializer() {
         }
     }, [dispatch]);
 
-    // Step 2: Fetch cart when ID is available (initial load)
+    // Step 2: Fetch the cart when ID is available (initial load)
     useEffect(() => {
         if (!id) return;
 
@@ -43,8 +43,6 @@ export default function CartInitializer() {
                     }
                 });
                 const data = await res.json();
-
-                console.log('Cart response:', data);
 
                 if (res.ok && data?.data) {
                     const Items = data.data.items;

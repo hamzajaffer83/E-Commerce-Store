@@ -383,6 +383,4 @@ export default function SingleProduct() {
             </div>
         </section>
     )
-
 }
-

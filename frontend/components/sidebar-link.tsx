@@ -8,6 +8,7 @@ import {Menu} from "lucide-react";
 import Image from "next/image";
 import {useState} from "react";
 import NavUser from "@/components/nav-user";
+import CartIcon from "@/components/cart-icon";
 
 export default function SidebarLink({data}: { data: Category[] }) {
     const [open, setOpen] = useState<boolean>(false);
@@ -42,7 +43,7 @@ export default function SidebarLink({data}: { data: Category[] }) {
                                                     <AccordionTrigger>
                                                         <Link
                                                             onClick={() => setOpen(false)}
-                                                            href={`/app/(home)/product/category/${category.name}`}
+                                                            href={`/product/category/${category.name}`}
                                                         >
                                                             {category.name}
                                                         </Link>
@@ -51,7 +52,7 @@ export default function SidebarLink({data}: { data: Category[] }) {
                                                         <AccordionContent key={sub.id}>
                                                             <Link
                                                                 onClick={() => setOpen(false)}
-                                                                href={`/app/(home)/product/category/${sub.name}`}
+                                                                href={`/product/category/${sub.name}`}
                                                             >
                                                                 {sub.name}
                                                             </Link>
@@ -69,12 +70,12 @@ export default function SidebarLink({data}: { data: Category[] }) {
                             </AccordionItem>
                         </Accordion>
 
-                        <Link href="#" className="pb-3" onClick={() => setOpen(false)}>Track Order</Link>
-                        <Link href="#" onClick={() => setOpen(false)}>Contact Us</Link>
+                        <Link href="/order/track" className="pb-3" onClick={() => setOpen(false)}>Track Order</Link>
                     </div>
 
                     {/* NavUser at bottom */}
-                    <div className="p-3 border-t mt-4">
+                    <div className="flex flex-col gap-2 p-3 border-t mt-4">
+                        <CartIcon />
                         <NavUser />
                     </div>
                 </div>
