@@ -6,7 +6,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:3000'], // <-- your Next.js frontend
+    'allowed_origins' => ['http://localhost:3000', 'http://192.168.0.106:3000'], // <-- your Next.js frontend
 
     'allowed_origins_patterns' => [],
 

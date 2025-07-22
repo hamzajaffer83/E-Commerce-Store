@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { type Product } from '@/types/data';
 import HomeProductSectionSkeleton from "@/components/home-product-section-skeleton";
+import ProdductDisplaySection from "@/components/sections/product-display-section";
 import ProductCard from "@/components/product-card";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
@@ -19,7 +20,7 @@ export default function CategoryProduct() {
     useEffect(() => {
         if (!name) return;
 
-        fetch(`${apiUrl}/api/category/${name}`, {
+        fetch(`${apiUrl}/api/product/category/${name}`, {
             next: { revalidate: 3600 },
             headers: {
                 'ApiSecretKey': apiSecretKey,
@@ -46,13 +47,7 @@ export default function CategoryProduct() {
                 {loading ? (
                     <HomeProductSectionSkeleton />
                 ) : data && data.length > 0 ? (
-                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                        {data.map((product: Product) => (
-                            <div key={product.id} className="mx-auto">
-                                <ProductCard product={product} />
-                            </div>
-                        ))}
-                    </div>
+                    <ProdductDisplaySection products={data} />
                 ) : (
                     <p className="text-center text-gray-500 text-sm mt-6">No Products Found</p>
                 )}

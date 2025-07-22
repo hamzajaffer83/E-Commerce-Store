@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
@@ -6,6 +5,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Box, LayoutGrid, Settings, Table, Tags } from 'lucide-react';
 import AppLogo from './app-logo';
+import NavDropdown from '@/components/nav-footer';
 
 const mainNavItems: NavItem[] = [
     {
@@ -30,14 +30,6 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Setting',
-        href: '/admin/web-site/setting',
-        icon: Settings,
-    }
-];
-
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -55,10 +47,10 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+                <NavDropdown />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

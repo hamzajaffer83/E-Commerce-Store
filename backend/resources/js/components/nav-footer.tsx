@@ -1,35 +1,58 @@
-import { Icon } from '@/components/icon';
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { type ComponentPropsWithoutRef } from 'react';
+import { useState } from 'react';
+import { ChevronDown, ChevronRight, ImagePlus, Link2, MessageCircle } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
-export function NavFooter({
-    items,
-    className,
-    ...props
-}: ComponentPropsWithoutRef<typeof SidebarGroup> & {
-    items: NavItem[];
-}) {
+const sidebarLinks = [
+    {
+        title: 'Settings',
+        icon: Settings,
+        subLinks: [
+            { title: 'Logo', icon: ImagePlus , href: '/admin/web-site/setting/site-logo' },
+            { title: 'Footer Social Links', icon: Link2 , href: '/admin/web-site/setting/site-link' },
+            { title: 'Whatsapp', icon: MessageCircle , href: '/admin/web-site/setting/whatsapp' },
+        ],
+    },
+];
+
+export default function NavDropdown() {
+    const [openDropdown, setOpenDropdown] = useState(false);
+
+    const toggleDropdown = () => {
+        setOpenDropdown((prev) => !prev);
+    };
+
     return (
-        <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
-            <SidebarGroupContent>
-                <SidebarMenu>
-                    {items.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton
-                                asChild
-                                className="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
+        <aside className="text-sm px-1 space-y-2">
+            {sidebarLinks.map((link) => (
+                <div key={link.title}>
+                        <div>
+                            <button
+                                onClick={toggleDropdown}
+                                className="w-full flex items-center justify-between py-2 px-3 rounded  font-medium"
                             >
-                                <Link href={item.href}>
-                                    {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                    <span>{item.title}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-            </SidebarGroupContent>
-        </SidebarGroup>
+                                <div className="flex items-center gap-2">
+                                    {link.icon && <link.icon className='h-4 w-4' />}
+                                    <span>{link.title}</span>
+                                </div>
+                                {openDropdown ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                            </button>
+
+                            {openDropdown && (
+                                <div className="pl-4 mt-1 space-y-1 items-center ">
+                                    {link.subLinks.map((sub) => (
+                                        <Link href={sub.href} key={sub.title} className='flex py-1 px-2  text-sm  rounded-md hover:bg-gray-100/10 gap-2 items-center'>
+                                            {sub.icon && <sub.icon className='h-4 w-4' />}
+                                            <p>
+                                            {sub.title}
+                                        </p>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                </div>
+            ))}
+        </aside>
     );
 }

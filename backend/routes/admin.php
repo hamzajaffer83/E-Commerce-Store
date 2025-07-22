@@ -4,17 +4,39 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SecretKeyController;
+use App\Http\Controllers\SiteSetting\SiteLogoController;
+use App\Http\Controllers\SiteSetting\SiteLinkController;
+use App\Http\Controllers\SiteSetting\WhatsappController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/create-secret-api-key', [SecretKeyController::class, 'index']);
 Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(function () {
 
-    // Dasboard
+    // Dashboard
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/all-orders', [AdminController::class, 'allOrder'])->name('all.orders');
     Route::put('/update-order-status/{id}', [AdminController::class, 'updateOrderStatus'])->name('update.order.status');
     Route::get('/single-order/{id}', [AdminController::class, 'singleOrder'])->name('single.order');
-    Route::get('/web-site/setting', [AdminController::class, 'setting'])->name('site.setting');
+    Route::prefix('/web-site/setting')->group(function(){
+        Route::get('/site-logo', [SiteLogoController::class, 'index'])->name('site-logo.index');
+        Route::post('/site-logo', [SiteLogoController::class, 'store'])->name('site-logo.store');
+        Route::post('/admin/site-logo/{logo}/assign-category', [SiteLogoController::class, 'assignCategory'])->name('site-logo.assign-category');
+        Route::delete('/site-logo/{id}', [SiteLogoController::class, 'destroy'])->name('site-logo.destroy');
+        // Site Social Links
+        Route::get('/site-link', [SiteLinkController::class, 'index'])->name('site.links');
+        Route::post('/site-link', [SiteLinkController::class, 'store'])->name('site-link.store');
+        Route::put('/site-link/{id}', [SiteLinkController::class, 'update'])->name('site-link.update');
+        Route::delete('/site-link/{id}', [SiteLinkController::class, 'destroy'])->name('site-link.destroy');
+
+        Route::prefix('/whatsapp')->name('admin.whatsapp.')->group(function () {
+            Route::get('/', [WhatsappController::class, 'index'])->name('index');
+            Route::post('/', [WhatsappController::class, 'store'])->name('store');
+            Route::put('/admin/whatsapp/{id}', [WhatsappController::class, 'update'])->name('update');
+            Route::post('/{whatsapp}/set-active', [WhatsappController::class, 'setActive'])->name('set-active');
+            Route::delete('/{whatsapp}', [WhatsappController::class, 'destroy'])->name('destroy');
+        });
+
+    });
 
     // Categories
     Route::prefix('/category')->group(function () {

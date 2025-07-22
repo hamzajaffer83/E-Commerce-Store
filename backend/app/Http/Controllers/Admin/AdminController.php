@@ -71,7 +71,4 @@ class AdminController extends Controller
         ]);
     }
 
-    public function setting(){
-        return Inertia::render('admin/site-setting');
-    }
 }

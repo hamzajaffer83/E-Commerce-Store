@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
-import HomeProductSection from "@/components/sections/home-product-section";
 import HomeProductSectionSkeleton from '@/components/home-product-section-skeleton';
 import type {ProductPagination} from "@/types/pagination";
+import ProductDisplaySection from "@/components/sections/product-display-section";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
@@ -27,7 +27,7 @@ export default async function Home() {
   return (
     <div>
         <Suspense fallback={<HomeProductSectionSkeleton />}>
-            <HomeProductSection products={products} />
+            <ProductDisplaySection products={products.data} />
         </Suspense>
     </div>
   );

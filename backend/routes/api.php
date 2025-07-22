@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SiteSettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('checkApiSecretKey')->group(function () {
@@ -15,6 +16,10 @@ Route::middleware('checkApiSecretKey')->group(function () {
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::get('/delete', [AuthController::class, 'delete']);
     });
+
+    Route::get('/{name}/logo', [SiteSettingController::class, 'logo']);
+    Route::get('/whatsapp', [SiteSettingController::class, 'whatsapp']);
+    Route::get('/footer-social-link', [SiteSettingController::class, 'footerLink']);
 
 // Categories Route
     Route::get('/categories/all', [CategoryController::class, 'index']);

@@ -45,7 +45,7 @@ export async function Navbar() {
                 </div>
                 <div className="">
                     <div className="hidden md:flex items-center cursor-pointer space-x-4">
-                        <Search />
+                        {/*<Search />*/}
                         <CartIcon />
                         <NavUser />
                     </div>

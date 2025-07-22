@@ -25,4 +25,9 @@ class Category extends Model
     {
         return $this->children()->with('childrenRecursive');
     }
+
+    public function logos()
+    {
+        return $this->belongsToMany(SiteLogo::class, 'logo_categories', 'category_id', 'logo_id');
+    }
 }
