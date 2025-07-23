@@ -1,6 +1,7 @@
 "use client";
 
 import type { WhatsappData } from "@/types/data";
+import Image from "next/image";
 
 const WhatsAppIcon = ({ data }: { data: WhatsappData }) => {
   return (
@@ -17,7 +18,7 @@ const WhatsAppIcon = ({ data }: { data: WhatsappData }) => {
         }
       }}
     >
-      <span className="text-white text-2xl">💬</span>
+      <Image src='/Whatsapp.png' alt="Whatsapp" height={30} width={30} />
     </div>
   );
 };
