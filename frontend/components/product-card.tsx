@@ -19,7 +19,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
     return (
         <Card
-            className="group w-full max-w-xs transition hover:shadow-xl border hover:border-gray-300 cursor-pointer"
+            className="group w-full max-w-xs transition hover:shadow-xl p-0 border hover:border-gray-300 cursor-pointer"
             onClick={handleClick}
         >
             <CardHeader className="relative h-[220px] overflow-hidden rounded-t-lg">

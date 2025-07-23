@@ -1,9 +1,5 @@
 import { type Category } from "@/types/data";
-import NavigationLinks from "@/components/navigation-links";
-import SidebarLink from "@/components/sidebar-link";
-import NavUser from "@/components/nav-user";
-import CartIcon from "@/components/cart-icon";
-import NavLogo from "./nav-logo";
+import NavBarClient from "./nav-bar-client";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || "";
@@ -33,23 +29,6 @@ export async function Navbar() {
   const { data }: { data: Category[] } = await getCategory();
 
   return (
-    <nav className="border-b">
-      <div className="max-w-6xl mx-auto w-full flex justify-between items-center px-4 py-4">
-        <NavLogo />
-        <div className="hidden md:flex">
-          <NavigationLinks data={data} />
-        </div>
-        <div className="">
-          <div className="hidden md:flex items-center cursor-pointer space-x-4">
-            {/*<Search />*/}
-            <CartIcon />
-            <NavUser />
-          </div>
-          <div className="md:hidden gap-2">
-            <SidebarLink data={data} />
-          </div>
-        </div>
-      </div>
-    </nav>
+    <NavBarClient data={data} />
   );
 }

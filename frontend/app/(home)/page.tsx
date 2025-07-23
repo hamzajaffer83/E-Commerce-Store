@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import HomeProductSectionSkeleton from "@/components/home-product-section-skeleton";
 import type { ProductPagination } from "@/types/pagination";
 import ProductDisplaySection from "@/components/sections/product-display-section";
-import LogoClientInitializer from "../logoInitializer";
+import LogoClientInitializer from "@/lib/logoInitializer";
+import { ColorInitiallizer } from "@/lib/colorInitaillizer";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || "";
@@ -30,8 +31,8 @@ export default async function Home() {
       {products ? (
         <Suspense fallback={<HomeProductSectionSkeleton />}>
           <LogoClientInitializer logo="/logo.svg" />
+          <ColorInitiallizer />
           <ProductDisplaySection products={products} />
-          
         </Suspense>
       ) : (
         <div className="w-full flex h-[64vh] items-center justify-center">

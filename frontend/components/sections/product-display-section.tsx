@@ -8,9 +8,7 @@ import { ProductPagination } from "@/types/pagination";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
@@ -51,7 +49,7 @@ export default function ProductDisplaySection({
   }, [searchQuery, data]);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <section className="max-w-7xl mx-auto px-4 h-full sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b pb-4">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Products</h1>
         <Input
@@ -69,7 +67,9 @@ export default function ProductDisplaySection({
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 text-sm mt-6">No products found.</p>
+        <div className="h-full flex items-center justify-center">
+          <p className="text-center text-gray-500 text-sm mt-6">No products found.</p>
+        </div>
       )}
 
       {/* Pagination */}

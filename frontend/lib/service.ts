@@ -1,3 +1,6 @@
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
+
 export function getLocalStorageUser() {
     if (typeof window !== 'undefined') {
         const user = localStorage.getItem('user');

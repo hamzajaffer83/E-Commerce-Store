@@ -9,7 +9,7 @@ const NavLogo = () => {
   const logo = useSelector((state: RootState) => state.logo.logo);
   return (
     <Link href="/" className="mt-2">
-      <Image src={logo} alt="Logo" width={70} height={8} />
+      <Image src={logo} alt="Logo" width={50} height={10} />
     </Link>
   );
 };

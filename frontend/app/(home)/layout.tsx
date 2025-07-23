@@ -1,8 +1,8 @@
 import { Navbar } from "@/components/nav-bar";
-import CartInitializer from "@/app/CartInitializer";
 import Footer from "@/components/footer";
 import WhatsAppIcon from "@/components/whatsapp-icon";
 import type { WhatsappData } from "@/types/data";
+import CartInitializer from "@/lib/CartInitializer";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || "";
