@@ -1,4 +1,4 @@
-import { type Product } from "./data";
+import { Category, type Product } from "./data";
 
 export type ProductPagination = {
     current_page: number;

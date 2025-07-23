@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 import {getLocalStorageToken} from "@/lib/service";
 import {clearCart} from "@/redux/cartSlice";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
 const token = getLocalStorageToken();
 

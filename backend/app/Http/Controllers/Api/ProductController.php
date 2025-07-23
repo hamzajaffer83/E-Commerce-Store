@@ -51,7 +51,7 @@ class ProductController extends Controller
             $product = Product::where('category_id', $fetchCategory->id)
             ->orWhere('sub_category_id', $fetchCategory->id)
             ->with('variations', 'images', 'socialLinks')
-            ->get();
+            ->paginate(50);
         } else {
             return response()->json([
                 'status' => 'error',

@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
+import { getLocalStorageSessionId } from "@/lib/service" // ✅ added import
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email"),
@@ -38,10 +39,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         setServerError(null)
 
         try {
+            const session_id = getLocalStorageSessionId() // ✅ get session_id if exists
+
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    ...data,
+                    ...(session_id && { session_id }), // ✅ include only if it exists
+                }),
             })
 
             const result = await res.json()
@@ -53,6 +59,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             }
             if (result.user) {
                 localStorage.setItem('user', JSON.stringify(result.user))
+                if(session_id){
+                    localStorage.removeItem('session_id')
+                }
             }
 
             toast.success('Login successful!')

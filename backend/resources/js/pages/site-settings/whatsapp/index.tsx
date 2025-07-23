@@ -118,7 +118,7 @@ const WhatsAppAdminSettings = ({ numbers }: Props) => {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Whatsapp" />
 
-            <div className="space-y-6 max-w-4xl mx-auto mt-10 px-4">
+            <div className="space-y-6 max-w-2xl w-full border rounded-md shadow mx-auto mt-10 p-4">
                 <h1 className="text-2xl font-semibold">WhatsApp Numbers</h1>
 
                 <Button onClick={openAddModal}>Add Number</Button>

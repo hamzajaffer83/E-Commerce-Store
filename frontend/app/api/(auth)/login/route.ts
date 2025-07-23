@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "Email and password are required" }, { status: 400 })
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL
-        const apiSecretKey = process.env.API_SECRET_KEY || ''
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+        const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || ''
 
         const loginRes = await fetch(`${apiUrl}/api/login`, {
             method: 'POST',

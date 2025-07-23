@@ -39,3 +39,13 @@ export type User = {
     created_at: string;
     updated_at: string;
 }
+
+export type WhatsappData =  {
+  id: number;
+  name: string;
+  phone: string;
+  message: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}

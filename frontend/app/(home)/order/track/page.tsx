@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, PackageCheck, Clock, Truck } from "lucide-react";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
 
 export default function OrderTrackingPage() {
@@ -54,7 +54,7 @@ export default function OrderTrackingPage() {
     };
 
     return (
-        <div className="max-w-xl mx-auto p-6">
+        <div className="max-w-xl h-[64vh] mx-auto p-6">
             <h1 className="text-3xl font-bold mb-4 text-center">Track Your Order</h1>
             <form onSubmit={fetchOrder} className="flex flex-col gap-4">
                 <Input

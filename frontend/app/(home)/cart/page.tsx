@@ -12,9 +12,11 @@ import { Trash2, XCircle, BaggageClaim } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useState, useMemo } from 'react';
 import { CheckOut }  from "@/components/check-out";
+import { getLocalStorageToken } from '@/lib/service';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
+const token = getLocalStorageToken();
 
 export default function Cart() {
     const dispatch = useAppDispatch();
@@ -200,7 +202,7 @@ export default function Cart() {
                         <Button onClick={handleClearCart} variant="destructive" className="w-1/2" size="sm">
                             <XCircle className="w-4 h-4 mr-2" /> Clear Cart
                         </Button>
-                        <Button onClick={() => setOpenCheckOut(true)} className="w-1/2" size="sm">
+                        <Button onClick={() => setOpenCheckOut(true)} className={`w-1/2 ${token ? '' : 'pointer-events-none opacity-50'}`} size="sm">
                             <BaggageClaim className="w-4 h-4 mr-2" /> Check Out
                         </Button>
                     </div>

@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const apiSecretKey = process.env.API_SECRET_KEY || '';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const apiSecretKey = process.env.NEXT_PUBLIC_API_SECRET_KEY || '';
         const res = await fetch(`${apiUrl}/api/register`, {
             method: 'POST',
             headers: {

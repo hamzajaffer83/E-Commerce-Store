@@ -5,10 +5,10 @@ import type {Category} from "@/types/data";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "@/components/ui/accordion";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet";
 import {Menu} from "lucide-react";
-import Image from "next/image";
 import {useState} from "react";
 import NavUser from "@/components/nav-user";
 import CartIcon from "@/components/cart-icon";
+import NavLogo from "./nav-logo";
 
 export default function SidebarLink({data}: { data: Category[] }) {
     const [open, setOpen] = useState<boolean>(false);
@@ -21,9 +21,7 @@ export default function SidebarLink({data}: { data: Category[] }) {
             <SheetContent className="md:w-2/6 flex flex-col h-full" side="left">
                 <SheetHeader>
                     <SheetTitle>
-                        <Link href="/">
-                            <Image src="/next.svg" alt="Logo" width={70} height={8} />
-                        </Link>
+                        <NavLogo />
                     </SheetTitle>
                 </SheetHeader>
 
