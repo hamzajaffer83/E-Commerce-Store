@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SecretKeyController;
+use App\Http\Controllers\SiteSetting\CategoryColorController;
 use App\Http\Controllers\SiteSetting\SiteLogoController;
 use App\Http\Controllers\SiteSetting\SiteLinkController;
 use App\Http\Controllers\SiteSetting\WhatsappController;
@@ -34,6 +35,13 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->group(functio
             Route::put('/admin/whatsapp/{id}', [WhatsappController::class, 'update'])->name('update');
             Route::post('/{whatsapp}/set-active', [WhatsappController::class, 'setActive'])->name('set-active');
             Route::delete('/{whatsapp}', [WhatsappController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('/category-theme')->name('admin.category-theme.')->group(function(){
+            Route::get('/', [CategoryColorController::class, 'index'])->name('index');
+            Route::post('/store', [CategoryColorController::class, 'store'])->name('store');
+            Route::put('/update/{id}', [CategoryColorController::class, 'update'])->name('update');
+            Route::delete('/{id}', [CategoryColorController::class, 'destroy'])->name('destroy');
         });
 
     });

@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, ImagePlus, Link2, MessageCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, ImagePlus, Link2, MessageCircle, Palette } from 'lucide-react';
 import { Settings } from 'lucide-react';
 
 const sidebarLinks = [
@@ -11,6 +11,7 @@ const sidebarLinks = [
             { title: 'Logo', icon: ImagePlus , href: '/admin/web-site/setting/site-logo' },
             { title: 'Footer Social Links', icon: Link2 , href: '/admin/web-site/setting/site-link' },
             { title: 'Whatsapp', icon: MessageCircle , href: '/admin/web-site/setting/whatsapp' },
+            { title: 'Category Theme', icon: Palette , href: '/admin/web-site/setting/category-theme' },
         ],
     },
 ];
